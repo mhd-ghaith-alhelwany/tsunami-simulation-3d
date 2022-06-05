@@ -1,5 +1,6 @@
 using UnityEngine;
-using Generators.ECS;
+using Generators.ECS.Fluid;
+using Generators.ECS.Objects;
 using Models;
 using  Controllers;
 
@@ -10,7 +11,7 @@ namespace Main {
     public class ECSGame
     {
         private float particleSize;
-        private Vector3 boxSize;
+        private float boxSize;
         private GameObject fluidPrefab;
         private GameObject boxPrefab;
 
@@ -28,7 +29,7 @@ namespace Main {
             this.transform = transform;
 
             this.particleSize = 16f;
-            this.boxSize = new Vector3(500, 500, 500);
+            this.boxSize = 500;
             this.generators = new List<Generator>();
 
             this.generators.Add(new BucketGenerator(this, new Vector3(10, 10, 10), new Vector3(0, 250, 0)));
@@ -43,44 +44,16 @@ namespace Main {
         {
             return this.transform;
         }
-        
-        public Vector3 getBoxSize()
-        {
-            return this.boxSize;
-        }
 
         public float getParticleSize()
         {
             return this.particleSize;
         }
 
-        public bool isOutsideBox(Vector3 point)
-        {
-            return 
-                point[0] >= this.boxSize[0] / 2 || 
-                point[1] >= this.boxSize[1] || 
-                point[2] >= this.boxSize[2] / 2 || 
-                point[0] <= -1 * this.boxSize[0] / 2 || 
-                point[1] <= 0 ||
-                point[2] <= -1 * this.boxSize[2] / 2;
-        }
-
-        private void startController()
-        {
-            if(this.controller != null)
-                this.controller.start();
-        }
-
         private void startGenerators()
         {
             foreach(Generator generator in this.generators)
                 generator.start();
-        }
-
-        private void updateController()
-        {
-            if(this.controller != null)
-                this.controller.update();
         }
 
         private void updateGenerators()
@@ -91,21 +64,27 @@ namespace Main {
 
         private void initEnvironment()
         {
-            this.boxPrefab.transform.localScale = this.boxSize;
-            this.boxObject = UnityEngine.Object.Instantiate(this.boxPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             this.fluidPrefab.transform.localScale = new Vector3(this.particleSize, this.particleSize, this.particleSize);
+            this.initRoom();
+        }
+
+        private void initRoom()
+        {
+            new WallGenerator(this.boxPrefab, this, new Vector3(1, this.boxSize, this.boxSize), new Vector3(+this.boxSize/2, 0, 0)).generate();
+            new WallGenerator(this.boxPrefab, this, new Vector3(1, this.boxSize, this.boxSize), new Vector3(-this.boxSize/2, 0, 0)).generate();
+            new WallGenerator(this.boxPrefab, this, new Vector3(this.boxSize, 1, this.boxSize), new Vector3(0, 0, +this.boxSize/2)).generate();
+            new WallGenerator(this.boxPrefab, this, new Vector3(this.boxSize, 1, this.boxSize), new Vector3(0, 0, -this.boxSize/2)).generate();
+            new WallGenerator(this.boxPrefab, this, new Vector3(this.boxSize, this.boxSize, 1), new Vector3(0, -this.boxSize/2, 0)).generate();
         }
 
         public void start()
         {
             this.initEnvironment();
             this.startGenerators();
-            this.startController();
         }
 
         public void update()
         {
-            this.updateController();
             this.updateGenerators();
         }
     }

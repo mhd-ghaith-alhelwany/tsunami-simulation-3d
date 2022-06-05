@@ -5,7 +5,7 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Components;
 
-namespace Generators.ECS{
+namespace Generators.ECS.Fluid{
     public class BucketGenerator: Generator
     {
         private ECSGame game;
@@ -29,7 +29,6 @@ namespace Generators.ECS{
             this.prefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(this.game.getFluidPrefab(), settings);
             this.entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-            Vector3 boxSize = this.game.getBoxSize();
             float particleSize = this.game.getParticleSize();
             int id = 1;
 
