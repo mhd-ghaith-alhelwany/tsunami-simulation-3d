@@ -25,13 +25,14 @@ namespace Generators.ECS.Objects{
         public override void generate()
         {
             base.objectPrefab.transform.localScale = this.size;
+            base.objectPrefab.transform.localPosition = this.center;
+
             this.settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, null);
             this.prefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(base.objectPrefab, settings);
             this.entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             var instance = this.entityManager.Instantiate(prefab);
             var t = this.game.getTransform().TransformPoint(center);
-            this.entityManager.SetComponentData(instance, new Translation{Value = t});
             this.entityManager.AddComponentData(instance, new BoxCollider{
                 size = size,
                 center = center

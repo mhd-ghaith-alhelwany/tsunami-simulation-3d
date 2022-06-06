@@ -14,16 +14,17 @@ namespace Generators.ECS.Fluid{
         private GameObjectConversionSettings settings;
         private Entity prefab;
         private EntityManager entityManager;
+        private System.Random random;
 
         public BucketGenerator(ECSGame game, Vector3 gridSize, Vector3 startingPoint) : base()
         {
             this.game = game;
             this.gridSize = gridSize;
             this.startingPoint = startingPoint;
+            this.random = new System.Random();
         }
 
-        override
-        public void start()
+        public override void start()
         {
             this.settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, null);
             this.prefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(this.game.getFluidPrefab(), settings);
@@ -33,17 +34,13 @@ namespace Generators.ECS.Fluid{
             int id = 1;
 
             for(int i = 0; i < this.gridSize[0]; i++){
-                float randi = 0;
-                randi += getRand();
                 for(int j = 0; j < this.gridSize[1]; j++){
                     for(int k = 0; k < this.gridSize[2]; k++){
-                        float randk = 0;
-                        randk += getRand();
                         this.CreateEntity(
                             id, 
-                            i * particleSize + startingPoint[0] + randi,
-                            j * particleSize + startingPoint[1],
-                            k * particleSize + startingPoint[2] + randk
+                            (i * particleSize) + startingPoint[0] + getRand(),
+                            (j * particleSize) + startingPoint[1] + getRand(),
+                            (k * particleSize) + startingPoint[2] + getRand()
                         );
                         id++;
                     }
@@ -56,11 +53,7 @@ namespace Generators.ECS.Fluid{
         {            
             var instance = this.entityManager.Instantiate(prefab);
 
-            var t = this.game.getTransform().TransformPoint(new float3(x, y, z));
 
-            this.entityManager.SetComponentData(instance, new Translation{
-                Value = t
-            });
             this.entityManager.AddComponentData(instance, new SphParticle{
                 particleId = id,
                 force = new float3(0.0f, 0.0f, 0.0f),
@@ -73,7 +66,7 @@ namespace Generators.ECS.Fluid{
 
         private float getRand()
         {
-            return new System.Random().Next((int)this.game.getParticleSize() / 4);
+            return random.Next(-(int)this.game.getParticleSize(), (int)this.game.getParticleSize()) / 10;
         }
 
         override

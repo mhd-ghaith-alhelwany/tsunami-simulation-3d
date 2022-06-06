@@ -60,9 +60,6 @@ public class SPHSystem : SystemBase
             pi.velocity += DT * pi.force / pi.density;
             pi.position = pi.position + (DT * pi.velocity);
 
-            //Handle Collision
-            
-
             //render
             translation.Value = pi.position;
 
