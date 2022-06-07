@@ -11,7 +11,7 @@ public class SPHSystem : SystemBase
     const float H = 16;
     const float H2 = H * H;
     const float MASS = 2.5f;
-    const float POLY6 = 4.0f / (Mathf.PI * (H*H*H*H*H*H*H*H));
+    const float POLY6 = 4.0f / (3.1415f * (H*H*H*H*H*H*H*H));
     const float GAS_CONST = 2000.0f;
     const float REST_DENS = 300.0f;
     const float SPIKY_GRAD = -10.0f / (Mathf.PI * (H*H*H*H*H));
@@ -19,21 +19,23 @@ public class SPHSystem : SystemBase
     const float VISC = 200.0f;
     const float DT = 0.0007f;
 
+    
+
     protected override void OnUpdate()
     {
         float3 G = new float3(0.0f, -10.0f, 0);
-
+        
         NativeArray<SphParticle> particles = GetEntityQuery(typeof(SphParticle)).ToComponentDataArray<SphParticle>(Allocator.TempJob);
         
         Entities.ForEach((ref SphParticle pi, ref Translation translation) => {
 
-            //calculate density + pressure
+            // //calculate density + pressure
             float density = 0;
             for(int i = 0; i < particles.Length; i++){
                 SphParticle pj = particles[i];
                 float l2 = getsqrMagnitude(pi.position, pj.position);
                 if(l2 < H2)
-                    density += MASS * POLY6 * Mathf.Pow(H2 - l2, 3);
+                    density += MASS * POLY6 * (H2 - l2) * (H2 - l2) * (H2 - l2);
             }
             float pressure = GAS_CONST * (density - REST_DENS);
             pi.density = density;
@@ -63,7 +65,7 @@ public class SPHSystem : SystemBase
             //render
             translation.Value = pi.position;
 
-        }).WithDisposeOnCompletion(particles).Schedule();
+        }).WithReadOnly(particles).WithDisposeOnCompletion(particles).ScheduleParallel();
     }
 
     private static float getsqrMagnitude(float3 pi, float3 pj)

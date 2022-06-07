@@ -35,7 +35,7 @@ namespace Main {
 
             this.generators = new List<Generator>();
 
-            this.generators.Add(new BucketGenerator(this, new Vector3(10, 20, 10), new Vector3(-200, 0, -200)));
+            this.generators.Add(new BucketGenerator(this, new Vector3(27, 27, 28), new Vector3(-200, 0, -200)));    
         }
 
         public GameObject getFluidPrefab()

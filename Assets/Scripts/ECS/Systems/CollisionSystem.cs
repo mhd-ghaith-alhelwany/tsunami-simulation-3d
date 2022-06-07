@@ -42,6 +42,6 @@ public class CollisionSystem : SystemBase
                 }
                 translation.Value = pi.position;
             }
-        }).WithDisposeOnCompletion(boxes).Schedule();
+        }).WithReadOnly(boxes).WithDisposeOnCompletion(boxes).ScheduleParallel();
     }
 }
