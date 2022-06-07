@@ -30,12 +30,12 @@ namespace Main {
             this.transform = transform;
 
             this.particleSize = 16f;
-            this.wallSize = 250;
+            this.wallSize = 500;
             this.floorSize = 500;
 
             this.generators = new List<Generator>();
 
-            this.generators.Add(new BucketGenerator(this, new Vector3(27, 27, 28), new Vector3(-200, 0, -200)));    
+            this.generators.Add(new BucketGenerator(this, new Vector3(10, 100, 10), new Vector3(-200, 0, -200)));    
         }
 
         public GameObject getFluidPrefab()

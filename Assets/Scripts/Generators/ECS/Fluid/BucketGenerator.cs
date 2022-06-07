@@ -66,7 +66,7 @@ namespace Generators.ECS.Fluid{
 
         private float getRand()
         {
-            return random.Next(-(int)this.game.getParticleSize(), (int)this.game.getParticleSize()) / 10;
+            return random.Next(-(int)this.game.getParticleSize(), (int)this.game.getParticleSize()) / 16;
         }
 
         override
