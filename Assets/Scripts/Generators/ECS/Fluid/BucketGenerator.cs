@@ -25,10 +25,10 @@ namespace Generators.ECS.Fluid{
         {
             float particleSize = this.game.getParticleSize();
 
-            for(int i = 0; i < this.gridSize[0]; i++){
-                for(int j = 0; j < this.gridSize[1]; j++){
-                    float randi = 0;
-                    float randk = 0;
+            for(int j = 0; j < this.gridSize[1]; j++){
+                float randi = 0;
+                float randk = 0;
+                for(int i = 0; i < this.gridSize[0]; i++){
                     for(int k = 0; k < this.gridSize[2]; k++){
                         randi += getRand();
                         randk += getRand();
@@ -42,7 +42,7 @@ namespace Generators.ECS.Fluid{
 
         private float getRand()
         {
-            return random.Next((int)this.game.getParticleSize()) / 2;
+            return random.Next((int)this.game.getParticleSize()) / 8;
         }
 
         override
