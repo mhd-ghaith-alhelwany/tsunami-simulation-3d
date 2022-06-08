@@ -33,7 +33,7 @@ namespace Generators.ECS.Fluid{
             for(int i = 1; i < I; i++){
                 for(int j = 1; j < J; j++){
                     for(int k = 0; k < K; k++){
-                        float3 position = new float3(i*particleSize - (this.width/2) + this.getRand(), (k+1)*particleSize - (this.depth/2), j*particleSize - (this.height/2) + this.getRand());
+                        float3 position = new float3(i*particleSize - (this.width/2) + this.getRand(), -(this.depth/2) + (k+1)*particleSize + 10, j*particleSize - (this.height/2) + this.getRand());
                         this.game.createParticle(position, new float3(0, 0, 0));
                     }
                 }

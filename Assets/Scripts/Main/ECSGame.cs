@@ -52,8 +52,8 @@ namespace Main {
 
             this.generators = new List<Generator>();
 
-            this.generators.Add(new BucketGenerator(this, new Vector3(4, 4, 4), new Vector3(-100, 200, -200)));    
-            this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, 5));    
+            // this.generators.Add(new BucketGenerator(this, new Vector3(4, 4, 4), new Vector3(-150, 200, -100)));    
+            this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, 3));    
 
             this.random = new System.Random();
         }
