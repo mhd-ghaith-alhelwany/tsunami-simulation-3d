@@ -32,6 +32,8 @@ namespace Main {
         
         private int particlesCount;
 
+        private System.Random random;
+
         public ECSGame(GameObject fluidPrefab, GameObject boxPrefab, Transform transform)
         {
 
@@ -50,8 +52,10 @@ namespace Main {
 
             this.generators = new List<Generator>();
 
-            this.generators.Add(new BucketGenerator(this, new Vector3(10, 10, 10), new Vector3(-100, 200, -200)));    
+            this.generators.Add(new BucketGenerator(this, new Vector3(4, 4, 4), new Vector3(-100, 200, -200)));    
             this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, 5));    
+
+            this.random = new System.Random();
         }
 
         private int generateParticleId()
@@ -60,7 +64,9 @@ namespace Main {
         }
         
         public void createParticle(float3 position, float3 velocity)
-        {            
+        {         
+            float size = this.particleSize;
+            this.fluidPrefab.transform.localScale = new Vector3(this.particleSize, this.particleSize, this.particleSize);   
             var instance = this.entityManager.Instantiate(this.particlePrefab);
             this.entityManager.AddComponentData(instance, new SphParticle{
                 particleId = this.generateParticleId(),
@@ -70,6 +76,11 @@ namespace Main {
                 density = 0.0f,
                 pressure = 0.0f
             });
+        }
+
+        private float getRand()
+        {
+            return this.random.Next(-(int)this.getParticleSize(), (int)this.getParticleSize()) / 4;
         }
 
         public GameObject getFluidPrefab()
