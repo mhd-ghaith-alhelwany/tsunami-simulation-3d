@@ -50,8 +50,8 @@ namespace Main {
 
             this.generators = new List<Generator>();
 
-            this.generators.Add(new BucketGenerator(this, new Vector3(10, 10, 10), new Vector3(-50, 200, -200)));    
-            this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, 10));    
+            this.generators.Add(new BucketGenerator(this, new Vector3(10, 25, 10), new Vector3(-100, 200, -200)));    
+            // this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, 10));    
         }
 
         private int generateParticleId()
@@ -107,11 +107,13 @@ namespace Main {
 
         private void initRoom()
         {
-            new WallGenerator(this.boxPrefab, this, new Vector3(20, this.wallSize, this.floorSize[1]), new Vector3(+this.floorSize[0]/2, 0, 0)).generate();
-            new WallGenerator(this.boxPrefab, this, new Vector3(20, this.wallSize, this.floorSize[1]), new Vector3(-this.floorSize[0]/2, 0, 0)).generate();
-            new WallGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, 20), new Vector3(0, 0, -this.floorSize[1]/2)).generate();
-            new WallGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, 20), new Vector3(0, 0, +this.floorSize[1]/2)).generate();
-            new WallGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], 20, this.floorSize[1]), new Vector3(0, -this.wallSize/2, 0)).generate();
+            new BoxGenerator(this.boxPrefab, this, new Vector3(20, this.wallSize, this.floorSize[1]), new Vector3(+this.floorSize[0]/2, 0, 0)).generate();
+            new BoxGenerator(this.boxPrefab, this, new Vector3(20, this.wallSize, this.floorSize[1]), new Vector3(-this.floorSize[0]/2, 0, 0)).generate();
+            new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, 20), new Vector3(0, 0, -this.floorSize[1]/2)).generate();
+            new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, 20), new Vector3(0, 0, +this.floorSize[1]/2)).generate();
+            new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], 20, this.floorSize[1]), new Vector3(0, -this.wallSize/2, 0)).generate();
+
+            new BoxGenerator(this.boxPrefab, this, new Vector3(50, 50, 50), new Vector3(0, -200, 0)).generate();
         }
 
         public void start()

@@ -27,8 +27,12 @@ namespace Generators.ECS.Fluid{
 
             for(int i = 0; i < this.gridSize[0]; i++){
                 for(int j = 0; j < this.gridSize[1]; j++){
+                    float randi = 0;
+                    float randk = 0;
                     for(int k = 0; k < this.gridSize[2]; k++){
-                        float3 position = new float3((i * particleSize) + startingPoint[0] + getRand(),(j * particleSize) + startingPoint[1] + getRand(),(k * particleSize) + startingPoint[2] + getRand());
+                        randi += getRand();
+                        randk += getRand();
+                        float3 position = new float3((i * particleSize) + startingPoint[0] + randi,(j * particleSize) + startingPoint[1] + getRand(),(k * particleSize) + startingPoint[2] + randk);
                         this.game.createParticle(position, new float3(0, 0, 0));
                     }
                 }
@@ -38,7 +42,7 @@ namespace Generators.ECS.Fluid{
 
         private float getRand()
         {
-            return random.Next(-(int)this.game.getParticleSize(), (int)this.game.getParticleSize()) / 16;
+            return random.Next((int)this.game.getParticleSize()) / 2;
         }
 
         override
