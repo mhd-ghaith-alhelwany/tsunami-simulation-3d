@@ -11,7 +11,7 @@ public class SPHSystem : SystemBase
     const float H = 16;
     const float H2 = H * H;
     const float MASS = 2.5f;
-    const float POLY6 = 4.0f / (3.1415f * (H*H*H*H*H*H*H*H));
+    const float POLY6 = 4.0f / (Mathf.PI * (H*H*H*H*H*H*H*H));
     const float GAS_CONST = 2000.0f;
     const float REST_DENS = 300.0f;
     const float SPIKY_GRAD = -10.0f / (Mathf.PI * (H*H*H*H*H));
@@ -33,7 +33,7 @@ public class SPHSystem : SystemBase
             float density = 0;
             for(int i = 0; i < particles.Length; i++){
                 SphParticle pj = particles[i];
-                float l2 = getsqrMagnitude(pi.position, pj.position);
+                float l2 = sqrMagnitude(pi.position, pj.position);
                 if(l2 < H2)
                     density += MASS * POLY6 * (H2 - l2) * (H2 - l2) * (H2 - l2);
             }
@@ -68,7 +68,7 @@ public class SPHSystem : SystemBase
         }).WithReadOnly(particles).WithDisposeOnCompletion(particles).ScheduleParallel();
     }
 
-    private static float getsqrMagnitude(float3 pi, float3 pj)
+    private static float sqrMagnitude(float3 pi, float3 pj)
     {
         return ((pi.x - pj.x) * (pi.x - pj.x)) + 
                ((pi.y - pj.y) * (pi.y - pj.y)) +
@@ -77,6 +77,6 @@ public class SPHSystem : SystemBase
 
     private static float getMagnitude(float3 pi, float3 pj)
     {
-        return Mathf.Sqrt(getsqrMagnitude(pi, pj));
+        return Mathf.Sqrt(sqrMagnitude(pi, pj));
     }
 }
