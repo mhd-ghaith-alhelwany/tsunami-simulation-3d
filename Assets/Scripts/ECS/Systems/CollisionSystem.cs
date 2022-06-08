@@ -7,7 +7,7 @@ using Unity.Transforms;
 
 public class CollisionSystem : SystemBase
 {
-    const float EPS = 8;
+    const float EPS = 16;
     const float BOUND_DAMPING = -0.5f;
     protected override void OnUpdate()
     {

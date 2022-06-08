@@ -17,4 +17,9 @@ public class ECSEngine : MonoBehaviour
     {
         this.game.update();
     }
+
+    public void buttonClicked()
+    {
+        Debug.Log(123);
+    }
 }

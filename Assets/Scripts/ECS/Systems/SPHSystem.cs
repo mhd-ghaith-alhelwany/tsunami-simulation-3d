@@ -16,7 +16,7 @@ public class SPHSystem : SystemBase
     const float REST_DENS = 300.0f;
     const float SPIKY_GRAD = -10.0f / (Mathf.PI * (H*H*H*H*H));
     const float VISC_LAP = 40.0f / (Mathf.PI * (H*H*H*H*H));
-    const float VISC = 200.0f;
+    const float VISC = 50.0f;
     const float DT = 0.0007f;
 
     
