@@ -43,7 +43,7 @@ namespace Main {
 
             this.particleSize = 16f;
             this.wallSize = 500;
-            this.floorSize = new Vector2(512, 512);
+            this.floorSize = new Vector2(255, 255);
             this.particlesCount = 0;
 
             this.settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, null);
@@ -52,8 +52,7 @@ namespace Main {
 
             this.generators = new List<Generator>();
 
-            // this.generators.Add(new BucketGenerator(this, new Vector3(4, 4, 4), new Vector3(-150, 200, -100)));    
-            this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, 3));    
+            this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, 2));    
 
             this.random = new System.Random();
         }
@@ -137,6 +136,11 @@ namespace Main {
         public void update()
         {
             this.updateGenerators();
+        }
+
+        public void buttonClicked()
+        {
+            new BucketGenerator(this, new Vector3(4, 4, 4), new Vector3(-150, 200, -100)).start();    
         }
     }
 }

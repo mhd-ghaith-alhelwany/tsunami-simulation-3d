@@ -1,9 +1,6 @@
 using UnityEngine;
 using Main;
-using Unity.Entities;
-using Unity.Transforms;
 using Unity.Mathematics;
-using Components;
 
 namespace Generators.ECS.Fluid{
     public class SeaGenerator: Generator

@@ -20,6 +20,6 @@ public class ECSEngine : MonoBehaviour
 
     public void buttonClicked()
     {
-        Debug.Log(123);
+        this.game.buttonClicked();
     }
 }
