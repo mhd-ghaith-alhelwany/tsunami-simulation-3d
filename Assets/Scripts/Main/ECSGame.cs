@@ -115,15 +115,16 @@ namespace Main {
         private void initRoom()
         {
             //Solids
-            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], Config.wallsThickness, this.floorSize[1]), new Vector3(0, -this.wallSize/2, 0)));
-            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(Config.wallsThickness, this.wallSize, this.floorSize[1]), new Vector3(+this.floorSize[0]/2, 0, 0)));
-            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(Config.wallsThickness, this.wallSize, this.floorSize[1]), new Vector3(-this.floorSize[0]/2, 0, 0)));
-            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, Config.wallsThickness), new Vector3(0, 0, -this.floorSize[1]/2)));
-            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, Config.wallsThickness), new Vector3(0, 0, +this.floorSize[1]/2)));
+            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], Config.wallsThickness, this.floorSize[1]), new Vector3(0, -this.wallSize/2, 0), false));
+            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(Config.wallsThickness, this.wallSize, this.floorSize[1]), new Vector3(+this.floorSize[0]/2, 0, 0), false));
+            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(Config.wallsThickness, this.wallSize, this.floorSize[1]), new Vector3(-this.floorSize[0]/2, 0, 0), false));
+            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, Config.wallsThickness), new Vector3(0, 0, -this.floorSize[1]/2), false));
+            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, Config.wallsThickness), new Vector3(0, 0, +this.floorSize[1]/2), false));
             // new BoxGenerator(this.boxPrefab, this, new Vector3(50, 50, 50), new Vector3(0, -200, 0));
 
             //Fluid
-            this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, Config.numberOfLayersInSea));    
+            // this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, Config.numberOfLayersInSea));    
+            this.generators.Add(new BucketGenerator(this, new Vector3(1, 1, 1), new Vector3(0, 0, 0)));    
         }
 
         public void start()

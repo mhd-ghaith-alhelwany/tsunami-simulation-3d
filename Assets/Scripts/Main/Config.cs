@@ -5,5 +5,7 @@ namespace Main{
         public static float floorY = 512;
         public static int numberOfLayersInSea = 5;
         public static int wallsThickness = 20;
+        public static float EPS = 16;
+        public static float BOUND_DAMPING = -0.5f;
     }
 }

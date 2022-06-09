@@ -9,18 +9,20 @@ namespace Generators{
         private ECSGame game;
 
         private float3 center, size;
+        private bool collides;
 
         private GameObjectConversionSettings settings;
         private Entity prefab;
         private EntityManager entityManager;
         private GameObject objectPrefab;
 
-        public BoxGenerator(GameObject objectPrefab, ECSGame game, float3 size, float3 center) : base()
+        public BoxGenerator(GameObject objectPrefab, ECSGame game, float3 size, float3 center, bool collides) : base()
         {
             this.game = game;
             this.size = size;
             this.center = center;
             this.objectPrefab = objectPrefab;
+            this.collides = collides;
         }
 
         public override void start()
@@ -34,10 +36,12 @@ namespace Generators{
 
             var instance = this.entityManager.Instantiate(prefab);
             var t = this.game.getTransform().TransformPoint(center);
-            this.entityManager.AddComponentData(instance, new BoxCollider{
-                size = size,
-                center = center
-            });
+
+            if(this.collides)
+                this.entityManager.AddComponentData(instance, new BoxCollider{
+                    size = size,
+                    center = center
+                });
 
         }
 
