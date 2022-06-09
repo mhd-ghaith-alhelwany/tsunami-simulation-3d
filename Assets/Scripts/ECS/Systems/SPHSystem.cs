@@ -5,21 +5,10 @@ using Unity.Mathematics;
 using Components;
 using UnityEngine;
 using Unity.Transforms;
+using Main;
 
 public class SPHSystem : SystemBase
 {
-    const float H = 16;
-    const float H2 = H * H;
-    const float MASS = 2.5f;
-    const float POLY6 = 4.0f / (Mathf.PI * (H*H*H*H*H*H*H*H));
-    const float GAS_CONST = 2000.0f;
-    const float REST_DENS = 300.0f;
-    const float SPIKY_GRAD = -10.0f / (Mathf.PI * (H*H*H*H*H));
-    const float VISC_LAP = 40.0f / (Mathf.PI * (H*H*H*H*H));
-    const float VISC = 50.0f;
-    const float DT = 0.0007f;
-
-    
 
     protected override void OnUpdate()
     {
@@ -34,10 +23,10 @@ public class SPHSystem : SystemBase
             for(int i = 0; i < particles.Length; i++){
                 SphParticle pj = particles[i];
                 float l2 = sqrMagnitude(pi.position, pj.position);
-                if(l2 < H2)
-                    density += MASS * POLY6 * (H2 - l2) * (H2 - l2) * (H2 - l2);
+                if(l2 < Config.H2)
+                    density += Config.MASS * Config.POLY6 * (Config.H2 - l2) * (Config.H2 - l2) * (Config.H2 - l2);
             }
-            float pressure = GAS_CONST * (density - REST_DENS);
+            float pressure = Config.GAS_CONST * (density - Config.REST_DENS);
             pi.density = density;
             pi.pressure = pressure;
 
@@ -49,18 +38,18 @@ public class SPHSystem : SystemBase
                 if(pi.particleId != pj.particleId){
                     float3 ij = pj.position - pi.position;
                     float l = getMagnitude(pi.position, pj.position);
-                    if(l < H){
-                        pressureForce += (-ij / l) * MASS * (pi.pressure + pj.pressure) / (2 * pj.density) * SPIKY_GRAD * Mathf.Pow(H - l, 3);
-                        viscocityForce += VISC * MASS * (pj.velocity - pi.velocity) / pj.density * VISC_LAP * (H - l);
+                    if(l < Config.H){
+                        pressureForce += (-ij / l) * Config.MASS * (pi.pressure + pj.pressure) / (2 * pj.density) * Config.SPIKY_GRAD * Mathf.Pow(Config.H - l, 3);
+                        viscocityForce += Config.VISC * Config.MASS * (pj.velocity - pi.velocity) / pj.density * Config.VISC_LAP * (Config.H - l);
                     }
                 }
             }
-            float3 gravityForce = G * MASS / pi.density;
+            float3 gravityForce = G * Config.MASS / pi.density;
             pi.force = pressureForce + viscocityForce + gravityForce;
 
             //integrate
-            pi.velocity += DT * pi.force / pi.density;
-            pi.position = pi.position + (DT * pi.velocity);
+            pi.velocity += Config.DT * pi.force / pi.density;
+            pi.position = pi.position + (Config.DT * pi.velocity);
 
             //render
             translation.Value = pi.position;

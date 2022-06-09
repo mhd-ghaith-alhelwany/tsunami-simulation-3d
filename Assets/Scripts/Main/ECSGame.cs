@@ -123,8 +123,8 @@ namespace Main {
             // new BoxGenerator(this.boxPrefab, this, new Vector3(50, 50, 50), new Vector3(0, -200, 0));
 
             //Fluid
-            // this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, Config.numberOfLayersInSea));    
-            this.generators.Add(new BucketGenerator(this, new Vector3(1, 1, 1), new Vector3(0, 0, 0)));    
+            this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, Config.numberOfLayersInSea));    
+            // this.generators.Add(new BucketGenerator(this, new Vector3(1, 1, 1), new Vector3(0, 0, 0)));    
         }
 
         public void start()
