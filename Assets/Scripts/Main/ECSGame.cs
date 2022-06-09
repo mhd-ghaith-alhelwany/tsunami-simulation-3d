@@ -1,8 +1,5 @@
 using UnityEngine;
-using Generators.ECS.Fluid;
-using Generators.ECS.Objects;
-using Models;
-using  Controllers;
+using Generators;
 
 using System.Collections.Generic;
 using Unity.Entities;
@@ -20,9 +17,7 @@ namespace Main {
         private GameObject boxPrefab;
 
         private List<Generator> generators;
-        private Controller controller;
 
-        private List<Particle> particles;
         private GameObject boxObject;
         private Transform transform;
 
@@ -42,8 +37,8 @@ namespace Main {
             this.transform = transform;
 
             this.particleSize = 16f;
-            this.wallSize = 500;
-            this.floorSize = new Vector2(255, 255);
+            this.wallSize = Config.wallSize;
+            this.floorSize = new Vector2(Config.floorX, Config.floorY);
             this.particlesCount = 0;
 
             this.settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, null);
@@ -51,10 +46,12 @@ namespace Main {
             this.entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             this.generators = new List<Generator>();
-
-            this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, 2));    
-
             this.random = new System.Random();
+        }
+
+        public Vector2 getFloorSize()
+        {
+            return this.floorSize;
         }
 
         private int generateParticleId()
@@ -117,14 +114,16 @@ namespace Main {
 
         private void initRoom()
         {
-            new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], 20, this.floorSize[1]), new Vector3(0, -this.wallSize/2, 0)).generate();
+            //Solids
+            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], Config.wallsThickness, this.floorSize[1]), new Vector3(0, -this.wallSize/2, 0)));
+            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(Config.wallsThickness, this.wallSize, this.floorSize[1]), new Vector3(+this.floorSize[0]/2, 0, 0)));
+            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(Config.wallsThickness, this.wallSize, this.floorSize[1]), new Vector3(-this.floorSize[0]/2, 0, 0)));
+            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, Config.wallsThickness), new Vector3(0, 0, -this.floorSize[1]/2)));
+            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, Config.wallsThickness), new Vector3(0, 0, +this.floorSize[1]/2)));
+            // new BoxGenerator(this.boxPrefab, this, new Vector3(50, 50, 50), new Vector3(0, -200, 0));
 
-            new BoxGenerator(this.boxPrefab, this, new Vector3(20, this.wallSize, this.floorSize[1]), new Vector3(+this.floorSize[0]/2, 0, 0)).generate();
-            new BoxGenerator(this.boxPrefab, this, new Vector3(20, this.wallSize, this.floorSize[1]), new Vector3(-this.floorSize[0]/2, 0, 0)).generate();
-            new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, 20), new Vector3(0, 0, -this.floorSize[1]/2)).generate();
-            new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, 20), new Vector3(0, 0, +this.floorSize[1]/2)).generate();
-
-            // new BoxGenerator(this.boxPrefab, this, new Vector3(50, 50, 50), new Vector3(0, -200, 0)).generate();
+            //Fluid
+            this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, Config.numberOfLayersInSea));    
         }
 
         public void start()

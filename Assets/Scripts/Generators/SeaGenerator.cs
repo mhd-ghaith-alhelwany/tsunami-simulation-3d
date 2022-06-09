@@ -2,7 +2,7 @@ using UnityEngine;
 using Main;
 using Unity.Mathematics;
 
-namespace Generators.ECS.Fluid{
+namespace Generators{
     public class SeaGenerator: Generator
     {
         private ECSGame game;

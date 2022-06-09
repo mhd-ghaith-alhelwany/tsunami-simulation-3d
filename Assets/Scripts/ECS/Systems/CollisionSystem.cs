@@ -12,6 +12,10 @@ public class CollisionSystem : SystemBase
     protected override void OnUpdate()
     {
         NativeArray<BoxCollider> boxes = GetEntityQuery(typeof(BoxCollider)).ToComponentDataArray<BoxCollider>(Allocator.TempJob);
+        if(boxes.Length == 0){
+            boxes.Dispose();
+            return;
+        }
         Entities.ForEach((ref SphParticle pi, ref Translation translation) => {
             for(int i = 0; i < boxes.Length; i++){
                 BoxCollider box = boxes[i];
@@ -39,8 +43,8 @@ public class CollisionSystem : SystemBase
                     pi.position = new float3(pi.position.x, pi.position.y, box.center.z + (box.size.z/2) + EPS);
                     pi.velocity *= BOUND_DAMPING;
                 }
-                translation.Value = pi.position;
             }
+            translation.Value = pi.position;
         }).WithReadOnly(boxes).WithDisposeOnCompletion(boxes).ScheduleParallel();
     }
 }

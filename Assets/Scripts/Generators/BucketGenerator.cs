@@ -1,60 +1,50 @@
 using UnityEngine;
 using Main;
-using Models;
-using System.Collections.Generic;
+using Unity.Mathematics;
 
 namespace Generators{
     public class BucketGenerator: Generator
     {
-        private Game game;
+        private ECSGame game;
         private Vector3 gridSize;
         private Vector3 startingPoint;
+        private System.Random random;
 
-        public BucketGenerator(Game game, Vector3 gridSize, Vector3 startingPoint) : base()
+        public BucketGenerator(ECSGame game, Vector3 gridSize, Vector3 startingPoint) : base()
         {
             this.game = game;
             this.gridSize = gridSize;
             this.startingPoint = startingPoint;
-            
+            this.random = new System.Random();
         }
 
-        override
-        public List<Particle> start(List<Particle> existingParticles)
+        public override void start()
         {
-            Vector3 boxSize = this.game.getBoxSize();
             float particleSize = this.game.getParticleSize();
-            for(int i = 0; i < this.gridSize[0]; i++){
+
+            for(int j = 0; j < this.gridSize[1]; j++){
                 float randi = 0;
-                randi += getRand();
-                for(int j = 0; j < this.gridSize[1]; j++){
+                float randk = 0;
+                for(int i = 0; i < this.gridSize[0]; i++){
                     for(int k = 0; k < this.gridSize[2]; k++){
-                        float randk = 0;
+                        randi += getRand();
                         randk += getRand();
-                        existingParticles.Add(
-                            new Particle(
-                                new Vector3(
-                                    i * particleSize + startingPoint[0] + randi,
-                                    j * particleSize + startingPoint[1],
-                                    k * particleSize + startingPoint[2] + randk
-                                ), 
-                                game.getFluidPrefab()
-                            )
-                        );
+                        float3 position = new float3((i * particleSize) + startingPoint[0] + randi,(j * particleSize) + startingPoint[1] + getRand(),(k * particleSize) + startingPoint[2] + randk);
+                        this.game.createParticle(position, new float3(0, 0, 0));
                     }
                 }
             }
-            return existingParticles;
         }
+
 
         private float getRand()
         {
-            return new System.Random().Next((int)this.game.getParticleSize() / 4);
+            return random.Next((int)this.game.getParticleSize()) / 8;
         }
 
         override
-        public List<Particle> update(List<Particle> existingParticles)
+        public void update()
         {
-            return existingParticles;
         }
     }
 }

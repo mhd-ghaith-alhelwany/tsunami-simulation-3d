@@ -2,10 +2,9 @@ using UnityEngine;
 using Unity.Entities;
 using Main;
 using Unity.Mathematics;
-using Unity.Transforms;
 
-namespace Generators.ECS.Objects{
-    public class BoxGenerator : ObjectGenerator
+namespace Generators{
+    public class BoxGenerator : Generator
     {
         private ECSGame game;
 
@@ -14,21 +13,23 @@ namespace Generators.ECS.Objects{
         private GameObjectConversionSettings settings;
         private Entity prefab;
         private EntityManager entityManager;
+        private GameObject objectPrefab;
 
-        public BoxGenerator(GameObject objectPrefab, ECSGame game, float3 size, float3 center) : base(objectPrefab)
+        public BoxGenerator(GameObject objectPrefab, ECSGame game, float3 size, float3 center) : base()
         {
             this.game = game;
             this.size = size;
             this.center = center;
+            this.objectPrefab = objectPrefab;
         }
 
-        public override void generate()
+        public override void start()
         {
-            base.objectPrefab.transform.localScale = this.size;
-            base.objectPrefab.transform.localPosition = this.center;
+            this.objectPrefab.transform.localScale = this.size;
+            this.objectPrefab.transform.localPosition = this.center;
 
             this.settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, null);
-            this.prefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(base.objectPrefab, settings);
+            this.prefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(this.objectPrefab, settings);
             this.entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             var instance = this.entityManager.Instantiate(prefab);
@@ -38,6 +39,11 @@ namespace Generators.ECS.Objects{
                 center = center
             });
 
+        }
+
+        public override void update()
+        {
+            return;
         }
     }
 }
