@@ -5,93 +5,40 @@ using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using Components;
+using Config;
 
 namespace Main {
 
     public class ECSGame
     {
-        private float particleSize;
-        private float wallSize;
-        private Vector2 floorSize;
-        private GameObject fluidPrefab;
+        private GameObject particlePrefab;
         private GameObject boxPrefab;
 
         private List<Generator> generators;
 
-        private GameObject boxObject;
-        private Transform transform;
-
         private GameObjectConversionSettings settings;
-        private Entity particlePrefab;
         private EntityManager entityManager;
-        
-        private int particlesCount;
 
+        private Entity particlePrefabEntity;
+        private Entity boxPrefabEntity;
+        
         private System.Random random;
 
-        public ECSGame(GameObject fluidPrefab, GameObject boxPrefab, Transform transform)
+        public ECSGame(GameObject particlePrefab, GameObject boxPrefab)
         {
 
-            this.fluidPrefab = fluidPrefab;
+            this.particlePrefab = particlePrefab;
             this.boxPrefab = boxPrefab;
-            this.transform = transform;
-
-            this.particleSize = 16f;
-            this.wallSize = Config.wallSize;
-            this.floorSize = new Vector2(Config.floorX, Config.floorY);
-            this.particlesCount = 0;
-
-            this.settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, null);
-            this.particlePrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(this.getFluidPrefab(), settings);
-            this.entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             this.generators = new List<Generator>();
+            
+            this.settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, null);
+            this.entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+            this.particlePrefabEntity = GameObjectConversionUtility.ConvertGameObjectHierarchy(this.particlePrefab, settings);
+            this.boxPrefabEntity = GameObjectConversionUtility.ConvertGameObjectHierarchy(this.boxPrefab, settings);
+
             this.random = new System.Random();
-        }
-
-        public Vector2 getFloorSize()
-        {
-            return this.floorSize;
-        }
-
-        private int generateParticleId()
-        {
-            return this.particlesCount++;
-        }
-        
-        public void createParticle(float3 position, float3 velocity)
-        {         
-            float size = this.particleSize;
-            this.fluidPrefab.transform.localScale = new Vector3(this.particleSize, this.particleSize, this.particleSize);   
-            var instance = this.entityManager.Instantiate(this.particlePrefab);
-            this.entityManager.AddComponentData(instance, new SphParticle{
-                particleId = this.generateParticleId(),
-                force = new float3(0.0f, 0.0f, 0.0f),
-                position = position,
-                velocity = velocity,
-                density = 0.0f,
-                pressure = 0.0f
-            });
-        }
-
-        private float getRand()
-        {
-            return this.random.Next(-(int)this.getParticleSize(), (int)this.getParticleSize()) / 4;
-        }
-
-        public GameObject getFluidPrefab()
-        {
-            return this.fluidPrefab;
-        }
-
-        public Transform getTransform()
-        {
-            return this.transform;
-        }
-
-        public float getParticleSize()
-        {
-            return this.particleSize;
         }
 
         private void startGenerators()
@@ -108,23 +55,20 @@ namespace Main {
 
         private void initEnvironment()
         {
-            this.fluidPrefab.transform.localScale = new Vector3(this.particleSize, this.particleSize, this.particleSize);
             this.initRoom();
         }
 
         private void initRoom()
         {
             //Solids
-            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], Config.wallsThickness, this.floorSize[1]), new Vector3(0, -this.wallSize/2, 0), false));
-            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(Config.wallsThickness, this.wallSize, this.floorSize[1]), new Vector3(+this.floorSize[0]/2, 0, 0), false));
-            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(Config.wallsThickness, this.wallSize, this.floorSize[1]), new Vector3(-this.floorSize[0]/2, 0, 0), false));
-            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, Config.wallsThickness), new Vector3(0, 0, -this.floorSize[1]/2), false));
-            this.generators.Add(new BoxGenerator(this.boxPrefab, this, new Vector3(this.floorSize[0], this.wallSize, Config.wallsThickness), new Vector3(0, 0, +this.floorSize[1]/2), false));
-            // new BoxGenerator(this.boxPrefab, this, new Vector3(50, 50, 50), new Vector3(0, -200, 0));
+            this.generators.Add(new BoxGenerator(this.boxPrefabEntity, this.entityManager, new Vector3(Simulation.floorX, Simulation.wallsThickness, Simulation.floorY), new Vector3(0, -Simulation.wallSize/2, 0), false));
+            this.generators.Add(new BoxGenerator(this.boxPrefabEntity, this.entityManager, new Vector3(Simulation.wallsThickness, Simulation.wallSize, Simulation.floorY), new Vector3(+Simulation.floorX/2, 0, 0), false));
+            this.generators.Add(new BoxGenerator(this.boxPrefabEntity, this.entityManager, new Vector3(Simulation.wallsThickness, Simulation.wallSize, Simulation.floorY), new Vector3(-Simulation.floorX/2, 0, 0), false));
+            this.generators.Add(new BoxGenerator(this.boxPrefabEntity, this.entityManager, new Vector3(Simulation.floorX, Simulation.wallSize, Simulation.wallsThickness), new Vector3(0, 0, -Simulation.floorY/2), false));
+            this.generators.Add(new BoxGenerator(this.boxPrefabEntity, this.entityManager, new Vector3(Simulation.floorX, Simulation.wallSize, Simulation.wallsThickness), new Vector3(0, 0, +Simulation.floorY/2), false));
 
             //Fluid
-            this.generators.Add(new SeaGenerator(this, this.floorSize[0], this.floorSize[1], this.wallSize, Config.numberOfLayersInSea));    
-            // this.generators.Add(new BucketGenerator(this, new Vector3(1, 1, 1), new Vector3(0, 0, 0)));    
+            this.generators.Add(new SeaGenerator(this.particlePrefabEntity, this.entityManager, Simulation.numberOfLayersInSea));    
         }
 
         public void start()
@@ -140,7 +84,7 @@ namespace Main {
 
         public void buttonClicked()
         {
-            new BucketGenerator(this, new Vector3(4, 4, 4), new Vector3(-150, 200, -100)).start();    
+            new BucketGenerator(this.particlePrefabEntity, this.entityManager, new Vector3(4, 4, 4), new Vector3(-150, 200, -100)).start();
         }
     }
 }

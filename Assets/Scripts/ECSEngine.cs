@@ -9,7 +9,7 @@ public class ECSEngine : MonoBehaviour
     
     void Start()
     {        
-        this.game = new ECSGame(particlePrefab, boxPrefab, transform);
+        this.game = new ECSGame(particlePrefab, boxPrefab);
         this.game.start();
     }
 

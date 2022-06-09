@@ -342,7 +342,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 763481451}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ECSEngine, Assembly-CSharp
         m_MethodName: buttonClicked
         m_Mode: 1

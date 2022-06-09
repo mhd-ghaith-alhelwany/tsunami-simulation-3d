@@ -1,49 +1,36 @@
-using UnityEngine;
-using Main;
+using Config;
 using Unity.Mathematics;
+using Unity.Entities;
 
 namespace Generators{
-    public class SeaGenerator: Generator
+    public class SeaGenerator: FluidGenerator
     {
-        private ECSGame game;
-        private Vector3 boxSize;
-        private System.Random random;
-        private float depth, width, height;
         private int layers;
 
-        public SeaGenerator(ECSGame game, float width, float height, float depth, int layers) : base()
+        public SeaGenerator(Entity prefab, EntityManager entityManager, int layers) : base(prefab, entityManager)
         {
-            this.game = game;
-            this.height = height;
-            this.width = width;
-            this.depth = depth;
             this.layers = layers;
-            this.random = new System.Random();
         }
 
         public override void start()
         {
-            float particleSize = this.game.getParticleSize();
-            int I = (int)(this.width/particleSize) - 1;
-            int J = (int)(this.height/particleSize) - 1; 
-            int K = layers; 
-            for(int i = 1; i < I; i++){
-                for(int j = 1; j < J; j++){
-                    for(int k = 0; k < K; k++){
-                        float3 position = new float3(i*particleSize - (this.width/2) + this.getRand(), -(this.depth/2) + (k+1)*particleSize + 10, j*particleSize - (this.height/2) + this.getRand());
-                        this.game.createParticle(position, new float3(0, 0, 0));
-                    }
-                }
-            }
+            int I = (int)(Simulation.floorX/Simulation.particleSize) - 1;
+            int J = (int)(Simulation.floorY/Simulation.particleSize) - 1; 
+            int K = layers;
+            for(int i = 1; i < I; i++)
+                for(int j = 1; j < J; j++)
+                    for(int k = 0; k < K; k++)
+                        this.create(this.getPositionVector(i, j, k), this.getEmptyVector());
         }
-
-        private float getRand()
+        public float3 getPositionVector(int i, int j, int k)
         {
-            return random.Next(-(int)this.game.getParticleSize(), (int)this.game.getParticleSize()) / 16;
+            return new float3(
+                i * Simulation.particleSize - (Simulation.floorY / 2), 
+                (k + 1) * Simulation.particleSize + (Simulation.wallsThickness / 2) - (Simulation.wallSize / 2), 
+                j * Simulation.particleSize - (Simulation.floorX / 2)
+            );
         }
-
-        override
-        public void update()
+        public override void update()
         {
         }
     }
