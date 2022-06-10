@@ -1,6 +1,3 @@
-using UnityEngine;
-using System.Collections.Generic;
-using Models;
 using Unity.Jobs;
 using Jobs;
 using Unity.Collections;
@@ -9,7 +6,18 @@ using Config;
 
 namespace Controllers{
     public class SPHController : Controller
-    {    
+    {
+        public void ComputePositionsInGrid(NativeArray<float3> positions)
+        {
+            NativeArray<int3> positionsInGrid = new NativeArray<int3>(positions.Length, Allocator.TempJob);
+            ComputePositionsInGrid job = new ComputePositionsInGrid(){
+                positions = positions,
+                positionInGrid = positionsInGrid
+            };
+            JobHandle jobHandle = job.Schedule(this.particlesCount, ECS.INNER_LOOP_BATCH_COUNT);
+            jobHandle.Complete();
+            this.setGrid(positionsInGrid);
+        }
 
         public void computeDensityAndPressure(NativeArray<float3> positions, NativeArray<float> densities, NativeArray<float> pressures)
         {
@@ -65,6 +73,7 @@ namespace Controllers{
             NativeArray<float> densities = this.getDensities();
             NativeArray<float> pressures = this.getPressures();
 
+            this.ComputePositionsInGrid(positions);
             this.computeDensityAndPressure(positions, densities, pressures);
             this.computeForces(positions, densities, velocities, forces, pressures);
             this.integrate(positions, densities, velocities, forces);
@@ -75,7 +84,7 @@ namespace Controllers{
             this.setForces(forces);
             this.setDensities(densities);
             this.setPressures(pressures);
-
+            
             positions.Dispose();
             velocities.Dispose();
             forces.Dispose();

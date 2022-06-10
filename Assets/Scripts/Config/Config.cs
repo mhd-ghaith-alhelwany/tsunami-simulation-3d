@@ -28,4 +28,11 @@ namespace Config{
     public static class ECS{
         public const int INNER_LOOP_BATCH_COUNT = 10;
     }
+
+    public static class SPATIAL_PARTITIONAING{
+        private const int NUMBER_OF_CELLS = 10;
+        public const int NUMBER_OF_CELLS_X = NUMBER_OF_CELLS;
+        public const int NUMBER_OF_CELLS_Y = NUMBER_OF_CELLS;
+        public const int NUMBER_OF_CELLS_Z = NUMBER_OF_CELLS;
+    }
 }

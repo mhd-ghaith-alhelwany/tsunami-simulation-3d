@@ -1,7 +1,6 @@
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Collections;
-using UnityEngine;
 using Config;
 
 namespace Jobs{

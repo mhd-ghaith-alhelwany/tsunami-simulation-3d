@@ -2,6 +2,8 @@ using Unity.Collections;
 using Unity.Mathematics;
 using System.Collections.Generic;
 using Models;
+using Collections;
+using Config;
 
 namespace Controllers{
     public abstract class Controller
@@ -10,8 +12,16 @@ namespace Controllers{
 
         private List<Particle> particles;
         protected int particlesCount;
-
         public void setParticles(List<Particle> particles){this.particles = particles; this.particlesCount = particles.Count;}
+
+        public Grid<int> particlesGrid;
+
+        public void setGrid(NativeArray<int3> positionsInGrid)
+        {
+            particlesGrid = new Grid<int>(SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_X, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Y, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Z);
+            for(int i = 0; i < positionsInGrid.Length; i++)
+                particlesGrid.getCell(positionsInGrid[i].x, positionsInGrid[i].y, positionsInGrid[i].z).add(i);
+        }
 
         protected NativeArray<float3> getPositions(){
             NativeArray<float3> values = new NativeArray<float3>(this.particles.Count, Allocator.TempJob);
