@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Models;
 using Collections;
 using Config;
+using UnityEngine;
 
 namespace Controllers{
     public abstract class Controller
@@ -19,8 +20,9 @@ namespace Controllers{
         public void setGrid(NativeArray<int3> positionsInGrid)
         {
             particlesGrid = new Grid<int>(SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_X, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Y, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Z);
-            for(int i = 0; i < positionsInGrid.Length; i++)
+            for(int i = 0; i < positionsInGrid.Length; i++){
                 particlesGrid.getCell(positionsInGrid[i].x, positionsInGrid[i].y, positionsInGrid[i].z).add(i);
+            }
         }
 
         protected NativeArray<float3> getPositions(){

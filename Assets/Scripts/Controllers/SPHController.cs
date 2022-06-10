@@ -3,6 +3,7 @@ using Jobs;
 using Unity.Collections;
 using Unity.Mathematics;
 using Config;
+using System.Collections.Generic;
 
 namespace Controllers{
     public class SPHController : Controller
@@ -17,17 +18,29 @@ namespace Controllers{
             JobHandle jobHandle = job.Schedule(this.particlesCount, ECS.INNER_LOOP_BATCH_COUNT);
             jobHandle.Complete();
             this.setGrid(positionsInGrid);
+            positionsInGrid.Dispose();
         }
 
         public void computeDensityAndPressure(NativeArray<float3> positions, NativeArray<float> densities, NativeArray<float> pressures)
         {
-            ComputeDensityAndPressure job = new ComputeDensityAndPressure(){
-                positions = positions,
-                densities = densities,
-                pressures = pressures
-            };
-            JobHandle jobHandle = job.Schedule(this.particlesCount, ECS.INNER_LOOP_BATCH_COUNT);
-            jobHandle.Complete();
+            NativeArray<JobHandle> jobHandles = new NativeArray<JobHandle>(this.particlesCount, Allocator.Temp);
+            List<NativeArray<float2>> results = new List<NativeArray<float2>>();
+            for(int i = 0; i < this.particlesCount; i++){
+                results.Add(new NativeArray<float2>(1, Allocator.TempJob));
+                ComputeDensityAndPressure job = new ComputeDensityAndPressure(){
+                    positions = positions,
+                    position = positions[i],
+                    result = results[i],
+                };
+                jobHandles[i] = job.Schedule();
+            }
+            JobHandle.CompleteAll(jobHandles);
+            for(int i = 0; i < this.particlesCount; i++){
+                densities[i] = results[i][0].x;
+                pressures[i] = results[i][0].y;
+                results[i].Dispose();
+            }
+            jobHandles.Dispose();
         }
 
         public void computeForces(NativeArray<float3> positions, NativeArray<float> densities, NativeArray<float3> velocities, NativeArray<float3> forces, NativeArray<float> pressures)

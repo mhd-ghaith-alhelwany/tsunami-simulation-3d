@@ -15,16 +15,14 @@ namespace Collections{
     }
     public class Grid<T>
     {
-        private int x, y, z;
         private Cell<T>[,,] cells;
         public Grid(int x, int y, int z)
         {
-            this.x = x;
-            this.y = y;
+
             this.cells = new Cell<T>[x, y, z];
-            for(int i = 0; i < y; i++)
+            for(int i = 0; i < x; i++)
                 for(int j = 0; j < y; j++)
-                    for(int k = 0; k < y; k++)
+                    for(int k = 0; k < z; k++)
                         this.cells[i, j, k] = new Cell<T>(i, j);
         }
         public Cell<T> getCell(int x, int y, int z)

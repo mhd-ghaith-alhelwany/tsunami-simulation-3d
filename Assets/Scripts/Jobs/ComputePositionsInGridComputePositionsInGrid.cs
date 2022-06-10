@@ -13,10 +13,16 @@ namespace Jobs{
         public void Execute(int index)
         {
             positionInGrid[index] = new int3(
-                (int)(positions[index].x * SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_X / Simulation.floorX),
-                (int)(positions[index].y * SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Y / Simulation.wallSize),
-                (int)(positions[index].z * SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Z / Simulation.floorY)
+                (int)maxMin(0, (int)((positions[index].x + Simulation.floorX / 2) * SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_X / Simulation.floorX), SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_X - 1),
+                (int)maxMin(0, (positions[index].y * SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Y / Simulation.wallSize), SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Y - 1),
+                (int)maxMin(0, (int)((positions[index].z + Simulation.floorY / 2) * SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Z / Simulation.floorY), SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Z - 1)
             );
+        }
+
+        public float maxMin(float x, float y, float z){
+            if(y > z) return z;
+            if(y < x) return x;
+            return y;
         }
     }
 }
