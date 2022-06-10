@@ -1,18 +1,20 @@
 using Config;
 using Unity.Mathematics;
-using Unity.Entities;
+using System.Collections.Generic;
+using UnityEngine;
+using Models;
 
 namespace Generators{
     public class SeaGenerator: FluidGenerator
     {
         private int layers;
 
-        public SeaGenerator(Entity prefab, EntityManager entityManager, int layers) : base(prefab, entityManager)
+        public SeaGenerator(GameObject prefab, int layers) : base(prefab)
         {
             this.layers = layers;
         }
 
-        public override void start()
+        public override List<Particle> start(List<Particle> particles)
         {
             int I = (int)(Simulation.floorX/Simulation.particleSize) - 1;
             int J = (int)(Simulation.floorY/Simulation.particleSize) - 1; 
@@ -20,8 +22,10 @@ namespace Generators{
             for(int i = 1; i < I; i++)
                 for(int j = 1; j < J; j++)
                     for(int k = 0; k < K; k++)
-                        this.create(this.getPositionVector(i, j, k), this.getEmptyVector());
+                        particles.Add(this.create(this.getPositionVector(i, j, k)));
+            return particles;
         }
+
         public float3 getPositionVector(int i, int j, int k)
         {
             return new float3(
@@ -30,8 +34,9 @@ namespace Generators{
                 j * Simulation.particleSize - (Simulation.floorX / 2)
             );
         }
-        public override void update()
+        public override List<Particle> update(List<Particle> particles)
         {
+            return particles;
         }
     }
 }

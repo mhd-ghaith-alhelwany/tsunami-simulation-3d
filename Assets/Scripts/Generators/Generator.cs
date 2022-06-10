@@ -1,38 +1,29 @@
-using Unity.Entities;
+using UnityEngine;
 using Unity.Mathematics;
-using Components;
+using System.Collections.Generic;
+using Models;
 
 namespace Generators{
     public abstract class Generator
     {
-        public static int ID = 0;
         private System.Random random;
-        protected Entity prefab;
-        protected EntityManager entityManager;
-
-        public abstract void start();
-        public abstract void update();
+        protected GameObject prefab;
         
-        public Generator(Entity prefab, EntityManager entityManager){
+        public Generator(GameObject prefab){
             this.prefab = prefab;
-            this.entityManager = entityManager;
             this.random = new System.Random();
         }
         private float getRand(){
-            return random.Next(-100, 100) / 100;
+            return random.Next(-20, 20) / 10;
         }
         protected float3 getNoiseVector(){
-            return new float3(getRand(), getRand(), getRand());
+            return new float3(this.getRand(), this.getRand(), this.getRand());
         }
         protected float3 getEmptyVector(){
             return new float3(0, 0, 0);
         }
-        protected Entity createEntity(){
-            Entity entity = this.entityManager.Instantiate(this.prefab);
-            this.entityManager.AddComponentData(entity, new UniqueID{
-                Value = ++ID
-            });
-            return entity;
+        protected GameObject createGameObject(Vector3 position){
+            return UnityEngine.Object.Instantiate(this.prefab, position, Quaternion.identity);
         }
     }
 }

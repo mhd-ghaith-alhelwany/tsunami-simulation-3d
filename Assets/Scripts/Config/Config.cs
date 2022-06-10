@@ -5,7 +5,7 @@ namespace Config{
         public const float floorX = 512;
         public const float wallSize = 256;
         public const float particleSize = 16;
-        public const int numberOfLayersInSea = 5;
+        public const int numberOfLayersInSea = 2;
         public const int wallsThickness = 20;
     }
     
@@ -23,5 +23,9 @@ namespace Config{
         public const float VISC_LAP = 40.0f / (PI * (H*H*H*H*H));
         public const float VISC = 50.0f;
         public const float DT = 0.0007f;
+    }
+
+    public static class ECS{
+        public const int INNER_LOOP_BATCH_COUNT = 10;
     }
 }

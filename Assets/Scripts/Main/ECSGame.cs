@@ -1,8 +1,9 @@
 using UnityEngine;
 using Generators;
 using System.Collections.Generic;
-using Unity.Entities;
 using Config;
+using Models;
+using Controllers;
 
 namespace Main {
 
@@ -11,77 +12,87 @@ namespace Main {
         private GameObject particlePrefab;
         private GameObject boxPrefab;
 
-        private List<Generator> generators;
-
-        private GameObjectConversionSettings settings;
-        private EntityManager entityManager;
-
-        private Entity particlePrefabEntity;
-        private Entity boxPrefabEntity;
-        
         private System.Random random;
 
+        private List<FluidGenerator> generators;
+        private List<Particle> particles;
+        private List<Controller> controllers;
+        
         public ECSGame(GameObject particlePrefab, GameObject boxPrefab)
         {
 
             this.particlePrefab = particlePrefab;
             this.boxPrefab = boxPrefab;
-
-            this.generators = new List<Generator>();
-            
-            this.settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, null);
-            this.entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-            this.particlePrefabEntity = GameObjectConversionUtility.ConvertGameObjectHierarchy(this.particlePrefab, settings);
-            this.boxPrefabEntity = GameObjectConversionUtility.ConvertGameObjectHierarchy(this.boxPrefab, settings);
-
             this.random = new System.Random();
+
+            this.generators = new List<FluidGenerator>();
+            this.particles = new List<Particle>();
+            this.controllers = new List<Controller>();
         }
 
-        private void startGenerators()
+        private void startFluidGenerators()
         {
-            foreach(Generator generator in this.generators)
-                generator.start();
+            foreach(FluidGenerator generator in this.generators)
+                this.particles = generator.start(this.particles);
         }
 
         private void updateGenerators()
         {
-            foreach(Generator generator in this.generators)
-                generator.update();
+            foreach(FluidGenerator generator in this.generators)
+                this.particles = generator.update(this.particles);
         }
 
-        private void initEnvironment()
+        private void updateControllers()
         {
-            this.initRoom();
+            foreach(Controller controller in this.controllers)
+                controller.update();
+        }
+
+        private void initFluidGenerators()
+        {
+            this.generators.Add(new SeaGenerator(this.particlePrefab, Simulation.numberOfLayersInSea));    
         }
 
         private void initRoom()
         {
-            //Solids
-            this.generators.Add(new BoxGenerator(this.boxPrefabEntity, this.entityManager, new Vector3(Simulation.floorX, Simulation.wallsThickness, Simulation.floorY), new Vector3(0, -Simulation.wallSize/2, 0), false));
-            this.generators.Add(new BoxGenerator(this.boxPrefabEntity, this.entityManager, new Vector3(Simulation.wallsThickness, Simulation.wallSize, Simulation.floorY), new Vector3(+Simulation.floorX/2, 0, 0), false));
-            this.generators.Add(new BoxGenerator(this.boxPrefabEntity, this.entityManager, new Vector3(Simulation.wallsThickness, Simulation.wallSize, Simulation.floorY), new Vector3(-Simulation.floorX/2, 0, 0), false));
-            this.generators.Add(new BoxGenerator(this.boxPrefabEntity, this.entityManager, new Vector3(Simulation.floorX, Simulation.wallSize, Simulation.wallsThickness), new Vector3(0, 0, -Simulation.floorY/2), false));
-            this.generators.Add(new BoxGenerator(this.boxPrefabEntity, this.entityManager, new Vector3(Simulation.floorX, Simulation.wallSize, Simulation.wallsThickness), new Vector3(0, 0, +Simulation.floorY/2), false));
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.floorX, Simulation.wallsThickness, Simulation.floorY), new Vector3(0, -Simulation.wallSize/2, 0), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.wallsThickness, Simulation.wallSize, Simulation.floorY), new Vector3(+Simulation.floorX/2, 0, 0), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.wallsThickness, Simulation.wallSize, Simulation.floorY), new Vector3(-Simulation.floorX/2, 0, 0), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.floorX, Simulation.wallSize, Simulation.wallsThickness), new Vector3(0, 0, -Simulation.floorY/2), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.floorX, Simulation.wallSize, Simulation.wallsThickness), new Vector3(0, 0, +Simulation.floorY/2), false).start();
+        }
 
-            //Fluid
-            this.generators.Add(new SeaGenerator(this.particlePrefabEntity, this.entityManager, Simulation.numberOfLayersInSea));    
+        public void initControllers()
+        {
+            SPHController sphController = new SPHController();
+            sphController.setParticles(particles);
+            this.controllers.Add(sphController);
+        }
+        
+        public void addFluidGenerator(FluidGenerator generator)
+        {
+            this.particles = generator.start(this.particles);
+            this.generators.Add(generator);
+        }
+
+        public void buttonClicked()
+        {
+            BucketGenerator generator = new BucketGenerator(this.particlePrefab, new Vector3(4, 4, 4), new Vector3(-150, 200, -100));
+            this.addFluidGenerator(generator);
         }
 
         public void start()
         {
-            this.initEnvironment();
-            this.startGenerators();
+            this.initRoom();
+            this.initFluidGenerators();
+            this.startFluidGenerators();
+            this.initControllers();
         }
 
         public void update()
         {
             this.updateGenerators();
-        }
-
-        public void buttonClicked()
-        {
-            new BucketGenerator(this.particlePrefabEntity, this.entityManager, new Vector3(4, 4, 4), new Vector3(-150, 200, -100)).start();
+            this.updateControllers();
         }
     }
 }

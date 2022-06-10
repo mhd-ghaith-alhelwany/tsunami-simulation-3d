@@ -1,21 +1,19 @@
-using Unity.Entities;
-using Unity.Transforms;
 using Unity.Mathematics;
-using Components.SPH;
+using Models;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Generators{
     public abstract class FluidGenerator : Generator
     {
-        public FluidGenerator(Entity prefab, EntityManager entityManager) : base(prefab, entityManager){}
-        public Entity create(float3 position, float3 velocity)
+        public FluidGenerator(GameObject prefab) : base(prefab){}
+
+        public abstract List<Particle> start(List<Particle> particles);
+        public abstract List<Particle> update(List<Particle> particles);
+
+        public Particle create(float3 position)
         {
-            Entity entity = base.createEntity();
-            entityManager.AddComponentData(entity, new Translation{Value = position + base.getNoiseVector()});
-            entityManager.AddComponentData(entity, new Force{Value = new float3(0, 0, 0)});
-            entityManager.AddComponentData(entity, new Velocity{Value = velocity});
-            entityManager.AddComponentData(entity, new Density{Value = 0f});
-            entityManager.AddComponentData(entity, new Pressure{Value = 0f});
-            return entity;
+            return new Particle(base.createGameObject(position + this.getNoiseVector()));
         }
     }
 }
