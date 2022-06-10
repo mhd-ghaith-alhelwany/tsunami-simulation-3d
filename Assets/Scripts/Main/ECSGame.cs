@@ -1,6 +1,5 @@
 using UnityEngine;
 using Generators;
-using Controllers;
 using System.Collections.Generic;
 using Unity.Entities;
 using Config;
@@ -13,7 +12,6 @@ namespace Main {
         private GameObject boxPrefab;
 
         private List<Generator> generators;
-        private SPHController controller;
 
         private GameObjectConversionSettings settings;
         private EntityManager entityManager;
@@ -70,28 +68,15 @@ namespace Main {
             this.generators.Add(new SeaGenerator(this.particlePrefabEntity, this.entityManager, Simulation.numberOfLayersInSea));    
         }
 
-        public void startController()
-        {
-            this.controller.start();
-        }
-
-        public void updateController()
-        {
-            this.controller.update();
-        }
-
-
         public void start()
         {
             this.initEnvironment();
             this.startGenerators();
-            this.startController();
         }
 
         public void update()
         {
             this.updateGenerators();
-            this.updateController();
         }
 
         public void buttonClicked()
