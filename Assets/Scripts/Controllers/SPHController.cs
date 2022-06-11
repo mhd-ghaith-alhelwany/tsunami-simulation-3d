@@ -20,67 +20,31 @@ namespace Controllers{
             this.setGrid(positionsInGrid);
         }
 
-        public void computeDensityAndPressure(NativeArray<int3> positionsInGrid, NativeArray<float3> allPositions, NativeArray<float> allDensities, NativeArray<float> allPressures)
+        public void computeDensityAndPressure(NativeArray<int3> positionsInGrid, NativeArray<float3> positions, NativeArray<float> densities, NativeArray<float> pressures, NativeMultiHashMap<int, int> neighbours)
         {
-            NativeArray<JobHandle> jobHandles = new NativeArray<JobHandle>(this.particlesCount, Allocator.Temp);
-            List<NativeArray<float2>> results = new List<NativeArray<float2>>();
-            List<NativeArray<int>> neighbouringIndexes = new List<NativeArray<int>>();
-
-            for(int i = 0; i < this.particlesCount; i++){
-                results.Add(new NativeArray<float2>(1, Allocator.TempJob));
-                neighbouringIndexes.Add(this.getNeighboursNativeArray(positionsInGrid[i]));
-                ComputeDensityAndPressure job = new ComputeDensityAndPressure(){
-                    neighbouringIndexes = neighbouringIndexes[i],
-                    positions = allPositions,
-                    position = allPositions[i],
-                    result = results[i],
-                };
-                jobHandles[i] = job.Schedule();
-            }
-            JobHandle.CompleteAll(jobHandles);
-            for(int i = 0; i < this.particlesCount; i++){
-                allDensities[i] = results[i][0].x;
-                allPressures[i] = results[i][0].y;
-                results[i].Dispose();
-                Debug.Log(100 * neighbouringIndexes[i].Length / particlesCount);
-                neighbouringIndexes[i].Dispose();
-            }
-            jobHandles.Dispose();
+            ComputeDensityAndPressure job = new ComputeDensityAndPressure(){
+                densities = densities,
+                neighbours = neighbours,
+                positions = positions, 
+                pressures = pressures,
+            };
+            JobHandle handle = job.Schedule(this.particlesCount, ECS.INNER_LOOP_BATCH_COUNT);
+            handle.Complete();
         }
 
-        public void computeForces(NativeArray<int3> positionsInGrid, NativeArray<int> allIds, NativeArray<float3> allPositions, NativeArray<float> allDensities, NativeArray<float3> allVelocities, NativeArray<float3> allForces, NativeArray<float> allPressures)
+        public void computeForces(NativeArray<int3> positionsInGrid, NativeArray<int> allIds, NativeArray<float3> allPositions, NativeArray<float> allDensities, NativeArray<float3> allVelocities, NativeArray<float3> allForces, NativeArray<float> allPressures, NativeMultiHashMap<int, int> neighbours)
         {
-            NativeArray<JobHandle> jobHandles = new NativeArray<JobHandle>(this.particlesCount, Allocator.Temp);
-            List<NativeArray<float3>> results = new List<NativeArray<float3>>();
-            List<NativeArray<int>> neighbouringIndexes = new List<NativeArray<int>>();
-            for(int i = 0; i < this.particlesCount; i++){
-                results.Add(new NativeArray<float3>(1, Allocator.TempJob));
-                neighbouringIndexes.Add(this.getNeighboursNativeArray(positionsInGrid[i]));
-                ComputeForces job = new ComputeForces(){
-                    neighbouringIndexes = neighbouringIndexes[i],
-                    positions = allPositions,
-                    velocities = allVelocities,
-                    forces = allForces,
-                    densities = allDensities,
-                    pressures = allPressures,
-                    ids = allIds,
-                    position = allPositions[i],
-                    density = allDensities[i],
-                    force = allForces[i],
-                    id = allIds[i],
-                    pressure = allPressures[i],
-                    velocity = allVelocities[i],
-                    result = results[i]
-                };
-                jobHandles[i] = job.Schedule();
-            }
-            JobHandle.CompleteAll(jobHandles);
-            for(int i = 0; i < this.particlesCount; i++){
-                allForces[i] = results[i][0];
-                results[i].Dispose();
-                neighbouringIndexes[i].Dispose();
-            }
-            jobHandles.Dispose();
+            ComputeForces job = new ComputeForces(){
+                neighbours = neighbours,
+                positions = allPositions,
+                velocities = allVelocities,
+                forces = allForces,
+                densities = allDensities,
+                pressures = allPressures,
+                ids = allIds,
+            };
+            JobHandle handle = job.Schedule(this.particlesCount, ECS.INNER_LOOP_BATCH_COUNT);
+            handle.Complete();
         }
 
         public void integrate(NativeArray<float3> positions, NativeArray<float> densities, NativeArray<float3> velocities, NativeArray<float3> forces)
@@ -114,10 +78,12 @@ namespace Controllers{
             NativeArray<float> pressures = this.getPressures();
             NativeArray<int> ids = this.getIds();
             NativeArray<int3> positionsInGrid = this.getPositionsInGrid();
-
+            
             this.ComputePositionsInGrid(positions, positionsInGrid);
-            this.computeDensityAndPressure(positionsInGrid, positions, densities, pressures);
-            this.computeForces(positionsInGrid, ids, positions, densities, velocities, forces, pressures);
+            NativeMultiHashMap<int, int> neighbours = this.getNeighboursNativeArrays(positionsInGrid);
+
+            this.computeDensityAndPressure(positionsInGrid, positions, densities, pressures, neighbours);    
+            this.computeForces(positionsInGrid, ids, positions, densities, velocities, forces, pressures, neighbours);
             this.integrate(positions, densities, velocities, forces);
             this.collideWithBounds(positions, velocities);
 
@@ -134,6 +100,7 @@ namespace Controllers{
             pressures.Dispose();
             ids.Dispose();
             positionsInGrid.Dispose();
+            neighbours.Dispose();
         }
     }
 }

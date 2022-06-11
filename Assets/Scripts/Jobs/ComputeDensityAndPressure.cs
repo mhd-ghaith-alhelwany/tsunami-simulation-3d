@@ -3,29 +3,32 @@ using Unity.Mathematics;
 using Unity.Collections;
 using Config;
 
-namespace Jobs{
+namespace Jobs
+{
     [BurstCompatible]
-    struct ComputeDensityAndPressure : IJob
+    struct ComputeDensityAndPressure : IJobParallelFor
     {
-        [ReadOnly] public NativeArray<float3> positions;
-        [ReadOnly]public NativeArray<int> neighbouringIndexes;
-        [ReadOnly]public float3 position;
-        public NativeArray<float2> result;
+        [NativeDisableParallelForRestriction] public NativeArray<float3> positions;
+        [NativeDisableParallelForRestriction] public NativeArray<float> densities;
+        [NativeDisableParallelForRestriction] public NativeArray<float> pressures;
+        [ReadOnly] public NativeMultiHashMap<int, int> neighbours;
 
-        public void Execute()
+        public void Execute(int index)
         {
-            int count = neighbouringIndexes.Length;
+            int i;
             float density = 0, pressure = 0;
-            for(int j = 0; j < count; j++){
-                int i = neighbouringIndexes[j];
-                float l2 = sqrMagnitude(position, positions[i]);
-                if(l2 < SPH.H2)
-                    density += SPH.MASS * SPH.POLY6 * (SPH.H2 - l2) * (SPH.H2 - l2) * (SPH.H2 - l2);
+            if (neighbours.TryGetFirstValue(index, out i, out var iterator)){
+                do{
+                    float l2 = sqrMagnitude(positions[index], positions[i]);
+                    if (l2 < SPH.H2)
+                        density += SPH.MASS * SPH.POLY6 * (SPH.H2 - l2) * (SPH.H2 - l2) * (SPH.H2 - l2);
+                } while (neighbours.TryGetNextValue(out i, ref iterator));
             }
             pressure = SPH.GAS_CONST * (density - SPH.REST_DENS);
-            result[0] = new float2(density, pressure);
+            densities[index] = density;
+            pressures[index] = pressure;
         }
 
-        private static float sqrMagnitude(float3 pi, float3 pj){return ((pi.x - pj.x) * (pi.x - pj.x)) + ((pi.y - pj.y) * (pi.y - pj.y)) + ((pi.z - pj.z) * (pi.z - pj.z));}
+        private static float sqrMagnitude(float3 pi, float3 pj) { return ((pi.x - pj.x) * (pi.x - pj.x)) + ((pi.y - pj.y) * (pi.y - pj.y)) + ((pi.z - pj.z) * (pi.z - pj.z)); }
     }
 }

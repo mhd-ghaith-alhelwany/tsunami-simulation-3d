@@ -35,6 +35,17 @@ namespace Controllers{
             return neightboursNativeArray;
         }
 
+        public NativeMultiHashMap<int, int> getNeighboursNativeArrays(NativeArray<int3> positionsInGrid){
+            NativeMultiHashMap<int, int> values = new NativeMultiHashMap<int, int>(particlesCount, Allocator.TempJob);
+            for(int i = 0; i < positionsInGrid.Length; i++){
+                NativeArray<int> neighbours = this.getNeighboursNativeArray(positionsInGrid[i]);
+                for(int j = 0; j < neighbours.Length; j++)
+                    values.Add(i, neighbours[j]);
+                neighbours.Dispose();
+            }
+            return values;
+        }
+
         protected NativeArray<float3> getPositions(){
             NativeArray<float3> values = new NativeArray<float3>(this.particles.Count, Allocator.TempJob);
             for(int i = 0; i < values.Length; i++) values[i] = this.particles[i].getPosition();

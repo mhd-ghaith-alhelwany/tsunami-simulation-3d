@@ -1,8 +1,8 @@
 namespace Config{
 
     public static class Simulation{
-        public const float floorY = 256;
-        public const float floorX = 256;
+        public const float floorY = 512;
+        public const float floorX = 512;
         public const float wallSize = 512;
         public const float particleSize = 16;
         public const int numberOfLayersInSea = 2;
@@ -26,11 +26,11 @@ namespace Config{
     }
 
     public static class ECS{
-        public const int INNER_LOOP_BATCH_COUNT = 100;
+        public const int INNER_LOOP_BATCH_COUNT = 50;
     }
 
     public static class SPATIAL_PARTITIONAING{
-        private const int NUMBER_OF_CELLS = 10;
+        private const int NUMBER_OF_CELLS = 32;
         public const int NUMBER_OF_CELLS_X = NUMBER_OF_CELLS;
         public const int NUMBER_OF_CELLS_Y = NUMBER_OF_CELLS;
         public const int NUMBER_OF_CELLS_Z = NUMBER_OF_CELLS;
