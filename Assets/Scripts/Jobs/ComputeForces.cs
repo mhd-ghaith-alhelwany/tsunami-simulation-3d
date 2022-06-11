@@ -14,25 +14,23 @@ namespace Jobs{
         [NativeDisableParallelForRestriction] public NativeArray<float> densities;
         [NativeDisableParallelForRestriction] public NativeArray<float> pressures;
         [NativeDisableParallelForRestriction] public NativeArray<int> ids;
-        [ReadOnly] public NativeMultiHashMap<int, int> neighbours;
+        [ReadOnly] public NativeArray<int> neighbours;
+        [ReadOnly] public NativeArray<int2> neighboursMinMax;
 
         public void Execute(int index)
         {
-            int i;
             float3 G = new float3(0.0f, -10.0f, 0);
             float3 pressureForce = new float3(0, 0, 0);
             float3 viscocityForce = new float3(0, 0, 0);
-            if (neighbours.TryGetFirstValue(index, out i, out var iterator)){
-                do{
-                    if(ids[index] != ids[i]){
-                        float3 line = positions[i] - positions[index];
-                        float l = getMagnitude(positions[i], positions[index]);
-                        if(l < SPH.H){
-                            pressureForce += (-line / l) * SPH.MASS * (pressures[index] + pressures[i]) / (2 * densities[index]) * SPH.SPIKY_GRAD * Mathf.Pow(SPH.H - l, 3);
-                            viscocityForce += SPH.VISC * SPH.MASS * (velocities[i] - velocities[index]) / densities[i] * SPH.VISC_LAP * (SPH.H - l);
-                        }
+            for(int i = neighboursMinMax[index][0]; i < neighboursMinMax[index][1]; i++){
+                if(ids[index] != ids[neighbours[i]]){
+                    float3 line = positions[neighbours[i]] - positions[index];
+                    float l = getMagnitude(positions[neighbours[i]], positions[index]);
+                    if(l < SPH.H){
+                        pressureForce += (-line / l) * SPH.MASS * (pressures[index] + pressures[neighbours[i]]) / (2 * densities[index]) * SPH.SPIKY_GRAD * Mathf.Pow(SPH.H - l, 3);
+                        viscocityForce += SPH.VISC * SPH.MASS * (velocities[neighbours[i]] - velocities[index]) / densities[neighbours[i]] * SPH.VISC_LAP * (SPH.H - l);
                     }
-                } while (neighbours.TryGetNextValue(out i, ref iterator));
+                }
             }
             float3 gravityForce = G * SPH.MASS / densities[index];
             forces[index] = pressureForce + viscocityForce + gravityForce;

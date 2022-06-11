@@ -19,11 +19,12 @@ namespace Controllers{
             jobHandle.Complete();
         }
 
-        public void computeDensityAndPressure(NativeArray<int3> positionsInGrid, NativeArray<float3> positions, NativeArray<float> densities, NativeArray<float> pressures, NativeMultiHashMap<int, int> neighbours)
+        public void computeDensityAndPressure()
         {
             ComputeDensityAndPressure job = new ComputeDensityAndPressure(){
                 densities = densities,
                 neighbours = neighbours,
+                neighboursMinMax = neighboursMinMax,
                 positions = positions, 
                 pressures = pressures,
             };
@@ -31,22 +32,23 @@ namespace Controllers{
             handle.Complete();
         }
 
-        public void computeForces(NativeArray<int3> positionsInGrid, NativeArray<int> allIds, NativeArray<float3> allPositions, NativeArray<float> allDensities, NativeArray<float3> allVelocities, NativeArray<float3> allForces, NativeArray<float> allPressures, NativeMultiHashMap<int, int> neighbours)
+        public void computeForces()
         {
             ComputeForces job = new ComputeForces(){
                 neighbours = neighbours,
-                positions = allPositions,
-                velocities = allVelocities,
-                forces = allForces,
-                densities = allDensities,
-                pressures = allPressures,
-                ids = allIds,
+                neighboursMinMax = neighboursMinMax,
+                positions = positions,
+                velocities = velocities,
+                forces = forces,
+                densities = densities,
+                pressures = pressures,
+                ids = ids,
             };
             JobHandle handle = job.Schedule(this.particlesCount, ECS.INNER_LOOP_BATCH_COUNT);
             handle.Complete();
         }
 
-        public void integrate(NativeArray<float3> positions, NativeArray<float> densities, NativeArray<float3> velocities, NativeArray<float3> forces)
+        public void integrate()
         {
             Integrate job = new Integrate(){
                 positions = positions,
@@ -58,7 +60,7 @@ namespace Controllers{
             jobHandle.Complete();
         }
 
-        public void collideWithBounds(NativeArray<float3> positions, NativeArray<float3> velocities)
+        public void collideWithBounds()
         {
             CollideWithBounds job = new CollideWithBounds(){
                 positions = positions,
@@ -72,13 +74,12 @@ namespace Controllers{
         {   
             this.ComputePositionsInGrid(positions, positionsInGrid);
             this.setGrid(positionsInGrid);
-            NativeMultiHashMap<int, int> neighbours = this.getNeighboursNativeArrays(positionsInGrid);
-            this.computeDensityAndPressure(positionsInGrid, positions, densities, pressures, neighbours);    
-            this.computeForces(positionsInGrid, ids, positions, densities, velocities, forces, pressures, neighbours);
-            this.integrate(positions, densities, velocities, forces);
-            this.collideWithBounds(positions, velocities);
+            this.setNeighboursArrays(positionsInGrid);
+            this.computeDensityAndPressure();
+            this.computeForces();
+            this.integrate();
+            this.collideWithBounds();
             this.setPositions(positions);
-            neighbours.Dispose();
         }
     }
 }

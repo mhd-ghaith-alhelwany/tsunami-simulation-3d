@@ -14,7 +14,7 @@ namespace Controllers{
         private List<Particle> particles;
         protected int particlesCount;
 
-        public Grid<int> particlesGrid;
+        public Grid particlesGrid;
 
         public NativeArray<float3> positions;
         public NativeArray<float3> velocities;
@@ -23,6 +23,8 @@ namespace Controllers{
         public NativeArray<float> pressures;
         public NativeArray<int> ids;
         public NativeArray<int3> positionsInGrid;
+        public NativeArray<int> neighbours;
+        public NativeArray<int2> neighboursMinMax;
 
         public void setParticles(List<Particle> particles){
             this.particles = particles; 
@@ -37,32 +39,26 @@ namespace Controllers{
         }
 
         public void setGrid(NativeArray<int3> positionsInGrid){
-            particlesGrid = new Grid<int>(SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_X, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Y, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Z);
+            particlesGrid = new Grid(SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_X, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Y, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Z);
             for(int i = 0; i < positionsInGrid.Length; i++){
                 particlesGrid.getCell(positionsInGrid[i].x, positionsInGrid[i].y, positionsInGrid[i].z).add(i);
             }
         }
-
-        public List<int> getNeighbours(int3 positionInGrid){
-            return this.particlesGrid.getNeightbours(positionInGrid.x, positionInGrid.y, positionInGrid.z);
-        }
-
-        public NativeArray<int> getNeighboursNativeArray(int3 positionInGrid){
-            List<int> neighboursList = this.getNeighbours(positionInGrid);
-            NativeArray<int> neightboursNativeArray = new NativeArray<int>(neighboursList.Count, Allocator.TempJob);
-            for(int i = 0; i < neighboursList.Count; i++) neightboursNativeArray[i] = neighboursList[i];
-            return neightboursNativeArray;
-        }
-
-        public NativeMultiHashMap<int, int> getNeighboursNativeArrays(NativeArray<int3> positionsInGrid){
-            NativeMultiHashMap<int, int> values = new NativeMultiHashMap<int, int>(particlesCount, Allocator.TempJob);
-            for(int i = 0; i < positionsInGrid.Length; i++){
-                NativeArray<int> neighbours = this.getNeighboursNativeArray(positionsInGrid[i]);
-                for(int j = 0; j < neighbours.Length; j++)
-                    values.Add(i, neighbours[j]);
+        
+        public void setNeighboursArrays(NativeArray<int3> positionsInGrid){
+            if(neighbours.IsCreated){
                 neighbours.Dispose();
+                neighboursMinMax.Dispose();
             }
-            return values;
+            neighboursMinMax = new NativeArray<int2>(particlesCount, Allocator.TempJob);
+            List<int> list = new List<int>();
+            for(int i = 0; i < positionsInGrid.Length; i++){
+                List<int> neighbours = this.particlesGrid.getNeighbours(positionsInGrid[i].x, positionsInGrid[i].y, positionsInGrid[i].z);
+                neighboursMinMax[i] = new int2(list.Count, list.Count + neighbours.Count);
+                list.AddRange(neighbours);
+            }
+            neighbours = new NativeArray<int>(list.Count, Allocator.TempJob);
+            for(int i = 0; i < list.Count; i++) neighbours[i] = list[i];
         }
 
         protected NativeArray<float3> getPositions(){

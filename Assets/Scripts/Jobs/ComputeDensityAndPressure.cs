@@ -2,6 +2,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Collections;
 using Config;
+using UnityEngine;
 
 namespace Jobs
 {
@@ -11,18 +12,16 @@ namespace Jobs
         [NativeDisableParallelForRestriction] public NativeArray<float3> positions;
         [NativeDisableParallelForRestriction] public NativeArray<float> densities;
         [NativeDisableParallelForRestriction] public NativeArray<float> pressures;
-        [ReadOnly] public NativeMultiHashMap<int, int> neighbours;
+        [ReadOnly] public NativeArray<int2> neighboursMinMax;
+        [ReadOnly] public NativeArray<int> neighbours;
 
         public void Execute(int index)
         {
-            int i;
             float density = 0, pressure = 0;
-            if (neighbours.TryGetFirstValue(index, out i, out var iterator)){
-                do{
-                    float l2 = sqrMagnitude(positions[index], positions[i]);
-                    if (l2 < SPH.H2)
-                        density += SPH.MASS * SPH.POLY6 * (SPH.H2 - l2) * (SPH.H2 - l2) * (SPH.H2 - l2);
-                } while (neighbours.TryGetNextValue(out i, ref iterator));
+            for(int i = neighboursMinMax[index][0]; i < neighboursMinMax[index][1]; i++){
+                float l2 = sqrMagnitude(positions[index], positions[neighbours[i]]);
+                if (l2 < SPH.H2)
+                    density += SPH.MASS * SPH.POLY6 * (SPH.H2 - l2) * (SPH.H2 - l2) * (SPH.H2 - l2);
             }
             pressure = SPH.GAS_CONST * (density - SPH.REST_DENS);
             densities[index] = density;
