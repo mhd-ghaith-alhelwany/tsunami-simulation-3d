@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Models;
 using Collections;
 using Config;
-using UnityEngine;
+using System.Diagnostics;
 
 namespace Controllers{
     public abstract class Controller
@@ -13,9 +13,28 @@ namespace Controllers{
 
         private List<Particle> particles;
         protected int particlesCount;
-        public void setParticles(List<Particle> particles){this.particles = particles; this.particlesCount = particles.Count;}
 
         public Grid<int> particlesGrid;
+
+        public NativeArray<float3> positions;
+        public NativeArray<float3> velocities;
+        public NativeArray<float3> forces;
+        public NativeArray<float> densities;
+        public NativeArray<float> pressures;
+        public NativeArray<int> ids;
+        public NativeArray<int3> positionsInGrid;
+
+        public void setParticles(List<Particle> particles){
+            this.particles = particles; 
+            this.particlesCount = particles.Count;
+            positions = this.getPositions();
+            velocities = this.getVelocities();
+            forces = this.getForces();
+            densities = this.getDensities();
+            pressures = this.getPressures();
+            ids = this.getIds();
+            positionsInGrid = this.getPositionsInGrid();
+        }
 
         public void setGrid(NativeArray<int3> positionsInGrid){
             particlesGrid = new Grid<int>(SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_X, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Y, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Z);

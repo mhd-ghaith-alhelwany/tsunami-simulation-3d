@@ -3,8 +3,8 @@ using Jobs;
 using Unity.Collections;
 using Unity.Mathematics;
 using Config;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Diagnostics;
 
 namespace Controllers{
     public class SPHController : Controller
@@ -17,7 +17,6 @@ namespace Controllers{
             };
             JobHandle jobHandle = job.Schedule(this.particlesCount, ECS.INNER_LOOP_BATCH_COUNT);
             jobHandle.Complete();
-            this.setGrid(positionsInGrid);
         }
 
         public void computeDensityAndPressure(NativeArray<int3> positionsInGrid, NativeArray<float3> positions, NativeArray<float> densities, NativeArray<float> pressures, NativeMultiHashMap<int, int> neighbours)
@@ -70,36 +69,15 @@ namespace Controllers{
         }
 
         public override void update()
-        {
-            NativeArray<float3> positions = this.getPositions();
-            NativeArray<float3> velocities = this.getVelocities();
-            NativeArray<float3> forces = this.getForces();
-            NativeArray<float> densities = this.getDensities();
-            NativeArray<float> pressures = this.getPressures();
-            NativeArray<int> ids = this.getIds();
-            NativeArray<int3> positionsInGrid = this.getPositionsInGrid();
-            
+        {   
             this.ComputePositionsInGrid(positions, positionsInGrid);
+            this.setGrid(positionsInGrid);
             NativeMultiHashMap<int, int> neighbours = this.getNeighboursNativeArrays(positionsInGrid);
-
             this.computeDensityAndPressure(positionsInGrid, positions, densities, pressures, neighbours);    
             this.computeForces(positionsInGrid, ids, positions, densities, velocities, forces, pressures, neighbours);
             this.integrate(positions, densities, velocities, forces);
             this.collideWithBounds(positions, velocities);
-
             this.setPositions(positions);
-            this.setVelocities(velocities);
-            this.setForces(forces);
-            this.setDensities(densities);
-            this.setPressures(pressures);
-            
-            positions.Dispose();
-            velocities.Dispose();
-            forces.Dispose();
-            densities.Dispose();
-            pressures.Dispose();
-            ids.Dispose();
-            positionsInGrid.Dispose();
             neighbours.Dispose();
         }
     }
