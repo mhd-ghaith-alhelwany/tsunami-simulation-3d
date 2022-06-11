@@ -68,6 +68,12 @@ namespace Main {
             sphController.setParticles(particles);
             this.controllers.Add(sphController);
         }
+
+        public void restartControllers()
+        {
+            this.controllers = new List<Controller>();
+            this.initControllers();
+        }
         
         public void addFluidGenerator(FluidGenerator generator)
         {
@@ -79,6 +85,7 @@ namespace Main {
         {
             BucketGenerator generator = new BucketGenerator(this.particlePrefab, new Vector3(4, 4, 4), new Vector3(-150, 200, -100));
             this.addFluidGenerator(generator);
+            this.restartControllers();
         }
 
         public void start()

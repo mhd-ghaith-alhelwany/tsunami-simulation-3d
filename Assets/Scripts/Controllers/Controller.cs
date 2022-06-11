@@ -50,6 +50,11 @@ namespace Controllers{
             for(int i = 0; i < values.Length; i++) values[i] = this.particles[i].getPressure();
             return values;
         }
+        protected NativeArray<int> getIds(){
+            NativeArray<int> values = new NativeArray<int>(this.particles.Count, Allocator.TempJob);
+            for(int i = 0; i < values.Length; i++) values[i] = this.particles[i].getId();
+            return values;
+        }
 
         protected void setPositions(NativeArray<float3> values){
             for(int i = 0; i < values.Length; i++) this.particles[i].setPosition(values[i]);

@@ -5,7 +5,7 @@ namespace Config{
         public const float floorX = 512;
         public const float wallSize = 256;
         public const float particleSize = 16;
-        public const int numberOfLayersInSea = 2;
+        public const int numberOfLayersInSea = 1;
         public const int wallsThickness = 20;
     }
     

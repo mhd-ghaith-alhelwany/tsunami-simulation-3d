@@ -7,9 +7,9 @@ namespace Jobs{
     [BurstCompatible]
     struct ComputeDensityAndPressure : IJob
     {
-        public float3 position;
-        public NativeArray<float2> result;
         [ReadOnly] public NativeArray<float3> positions;
+        public NativeArray<float2> result;
+        public float3 position;
 
         public void Execute()
         {

@@ -43,17 +43,35 @@ namespace Controllers{
             jobHandles.Dispose();
         }
 
-        public void computeForces(NativeArray<float3> positions, NativeArray<float> densities, NativeArray<float3> velocities, NativeArray<float3> forces, NativeArray<float> pressures)
+        public void computeForces(NativeArray<int> ids, NativeArray<float3> positions, NativeArray<float> densities, NativeArray<float3> velocities, NativeArray<float3> forces, NativeArray<float> pressures)
         {
-            ComputeForces job = new ComputeForces(){
-                positions = positions,
-                velocities = velocities,
-                forces = forces,
-                densities = densities,
-                pressures = pressures
-            };
-            JobHandle jobHandle = job.Schedule(this.particlesCount, ECS.INNER_LOOP_BATCH_COUNT);
-            jobHandle.Complete();
+            NativeArray<JobHandle> jobHandles = new NativeArray<JobHandle>(this.particlesCount, Allocator.Temp);
+            List<NativeArray<float3>> results = new List<NativeArray<float3>>();
+            for(int i = 0; i < this.particlesCount; i++){
+                results.Add(new NativeArray<float3>(1, Allocator.TempJob));
+                    ComputeForces job = new ComputeForces(){
+                    positions = positions,
+                    velocities = velocities,
+                    forces = forces,
+                    densities = densities,
+                    pressures = pressures,
+                    ids = ids,
+                    position = positions[i],
+                    density = densities[i],
+                    force = forces[i],
+                    id = ids[i],
+                    pressure = pressures[i],
+                    velocity = velocities[i],
+                    result = results[i]
+                };
+                jobHandles[i] = job.Schedule();
+            }
+            JobHandle.CompleteAll(jobHandles);
+            for(int i = 0; i < this.particlesCount; i++){
+                forces[i] = results[i][0];
+                results[i].Dispose();
+            }
+            jobHandles.Dispose();
         }
 
         public void integrate(NativeArray<float3> positions, NativeArray<float> densities, NativeArray<float3> velocities, NativeArray<float3> forces)
@@ -85,10 +103,11 @@ namespace Controllers{
             NativeArray<float3> forces = this.getForces();
             NativeArray<float> densities = this.getDensities();
             NativeArray<float> pressures = this.getPressures();
+            NativeArray<int> ids = this.getIds();
 
             this.ComputePositionsInGrid(positions);
             this.computeDensityAndPressure(positions, densities, pressures);
-            this.computeForces(positions, densities, velocities, forces, pressures);
+            this.computeForces(ids, positions, densities, velocities, forces, pressures);
             this.integrate(positions, densities, velocities, forces);
             this.collideWithBounds(positions, velocities);
 
@@ -103,6 +122,7 @@ namespace Controllers{
             forces.Dispose();
             densities.Dispose();
             pressures.Dispose();
+            ids.Dispose();
         }
     }
 }
