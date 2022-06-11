@@ -71,6 +71,9 @@ namespace Main {
 
         public void restartControllers()
         {
+            foreach(Controller controller in controllers)
+                controller.Dispose();
+
             this.controllers = new List<Controller>();
             this.initControllers();
         }

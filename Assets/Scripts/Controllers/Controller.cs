@@ -38,6 +38,19 @@ namespace Controllers{
             positionsInGrid = this.getPositionsInGrid();
         }
 
+        public void Dispose()
+        {
+            positions.Dispose();
+            velocities.Dispose();
+            forces.Dispose();
+            densities.Dispose();
+            pressures.Dispose();
+            ids.Dispose();
+            positionsInGrid.Dispose();
+            neighbours.Dispose();
+            neighboursMinMax.Dispose();
+        }
+
         public void setGrid(NativeArray<int3> positionsInGrid){
             particlesGrid = new Grid(SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_X, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Y, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Z);
             for(int i = 0; i < positionsInGrid.Length; i++){
