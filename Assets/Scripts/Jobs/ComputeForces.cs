@@ -23,15 +23,16 @@ namespace Jobs{
         public int id;
 
         public NativeArray<float3> result;
-
+        public NativeArray<int> neighbouringIndexes;
 
         public void Execute()
         {
             float3 G = new float3(0.0f, -10.0f, 0);
-            int count = positions.Length;
+            int count = neighbouringIndexes.Length;
             float3 pressureForce = new float3(0, 0, 0);
             float3 viscocityForce = new float3(0, 0, 0);
-            for(int i = 0; i < count; i++){
+            for(int j = 0; j < count; j++){
+                int i = neighbouringIndexes[j];
                 if(id != ids[i]){
                     float3 line = positions[i] - position;
                     float l = getMagnitude(positions[i], position);

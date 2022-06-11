@@ -17,12 +17,22 @@ namespace Controllers{
 
         public Grid<int> particlesGrid;
 
-        public void setGrid(NativeArray<int3> positionsInGrid)
-        {
+        public void setGrid(NativeArray<int3> positionsInGrid){
             particlesGrid = new Grid<int>(SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_X, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Y, SPATIAL_PARTITIONAING.NUMBER_OF_CELLS_Z);
             for(int i = 0; i < positionsInGrid.Length; i++){
                 particlesGrid.getCell(positionsInGrid[i].x, positionsInGrid[i].y, positionsInGrid[i].z).add(i);
             }
+        }
+
+        public List<int> getNeighbours(int3 positionInGrid){
+            return this.particlesGrid.getNeightbours(positionInGrid.x, positionInGrid.y, positionInGrid.z);
+        }
+
+        public NativeArray<int> getNeighboursNativeArray(int3 positionInGrid){
+            List<int> neighboursList = this.getNeighbours(positionInGrid);
+            NativeArray<int> neightboursNativeArray = new NativeArray<int>(neighboursList.Count, Allocator.TempJob);
+            for(int i = 0; i < neighboursList.Count; i++) neightboursNativeArray[i] = neighboursList[i];
+            return neightboursNativeArray;
         }
 
         protected NativeArray<float3> getPositions(){
@@ -30,6 +40,7 @@ namespace Controllers{
             for(int i = 0; i < values.Length; i++) values[i] = this.particles[i].getPosition();
             return values;
         }
+        
         protected NativeArray<float3> getVelocities(){
             NativeArray<float3> values = new NativeArray<float3>(this.particles.Count, Allocator.TempJob);
             for(int i = 0; i < values.Length; i++) values[i] = this.particles[i].getVelocity();
@@ -53,6 +64,11 @@ namespace Controllers{
         protected NativeArray<int> getIds(){
             NativeArray<int> values = new NativeArray<int>(this.particles.Count, Allocator.TempJob);
             for(int i = 0; i < values.Length; i++) values[i] = this.particles[i].getId();
+            return values;
+        }
+        protected NativeArray<int3> getPositionsInGrid(){
+            NativeArray<int3> values = new NativeArray<int3>(this.particles.Count, Allocator.TempJob);
+            for(int i = 0; i < values.Length; i++) values[i] = this.particles[i].getPositionInGrid();
             return values;
         }
 

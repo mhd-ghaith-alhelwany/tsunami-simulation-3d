@@ -8,14 +8,16 @@ namespace Jobs{
     struct ComputeDensityAndPressure : IJob
     {
         [ReadOnly] public NativeArray<float3> positions;
+        [ReadOnly]public NativeArray<int> neighbouringIndexes;
+        [ReadOnly]public float3 position;
         public NativeArray<float2> result;
-        public float3 position;
 
         public void Execute()
         {
-            int count = positions.Length;
+            int count = neighbouringIndexes.Length;
             float density = 0, pressure = 0;
-            for(int i = 0; i < count; i++){
+            for(int j = 0; j < count; j++){
+                int i = neighbouringIndexes[j];
                 float l2 = sqrMagnitude(position, positions[i]);
                 if(l2 < SPH.H2)
                     density += SPH.MASS * SPH.POLY6 * (SPH.H2 - l2) * (SPH.H2 - l2) * (SPH.H2 - l2);

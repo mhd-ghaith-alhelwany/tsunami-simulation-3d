@@ -1,9 +1,12 @@
 using UnityEngine;
+using Unity.Mathematics;
+
 namespace Models{
     public class Particle : Model
     {
         private float density, pressure;
         private Vector3 force, velocity, position;
+        private int3 positionInGrid;
 
         public Particle(GameObject gameObject): base(gameObject)
         {
@@ -19,11 +22,14 @@ namespace Models{
         public void setForce(Vector3 value){this.force = value;}
         public void setDensity(float value){this.density = value;}
         public void setPressure(float value){this.pressure = value;}
+        public void setPositionInGrid(int3 value){this.positionInGrid = value;}
+        
         public Vector3 getPosition(){return position;}
         public Vector3 getVelocity(){return velocity;}
         public Vector3 getForce(){return force;}
         public float getDensity(){return density;}
         public float getPressure(){return pressure;}
+        public int3 getPositionInGrid(){return positionInGrid;}
         
     }
 }
