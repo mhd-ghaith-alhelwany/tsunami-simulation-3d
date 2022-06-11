@@ -30,7 +30,7 @@ namespace Generators{
         {
             return new float3(
                 i * Simulation.particleSize - (Simulation.floorX / 2), 
-                (k + 1) * Simulation.particleSize + (Simulation.wallsThickness / 2) - (Simulation.wallSize / 2), 
+                (k + 5) * Simulation.particleSize + (Simulation.wallsThickness / 2) - (Simulation.wallSize / 2),
                 j * Simulation.particleSize - (Simulation.floorY / 2)
             );
         }
