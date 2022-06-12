@@ -55,11 +55,11 @@ namespace Main {
 
         private void initRoom()
         {
-            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.floorX, Simulation.wallsThickness, Simulation.floorY), new Vector3(0, -Simulation.wallSize/2, 0), false).start();
-            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.wallsThickness, Simulation.wallSize, Simulation.floorY), new Vector3(+Simulation.floorX/2, 0, 0), false).start();
-            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.wallsThickness, Simulation.wallSize, Simulation.floorY), new Vector3(-Simulation.floorX/2, 0, 0), false).start();
-            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.floorX, Simulation.wallSize, Simulation.wallsThickness), new Vector3(0, 0, -Simulation.floorY/2), false).start();
-            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.floorX, Simulation.wallSize, Simulation.wallsThickness), new Vector3(0, 0, +Simulation.floorY/2), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.RoomSizeX, Simulation.wallsThickness, Simulation.RoomSizeY), new Vector3(0, -Simulation.RoomSizeZ/2, 0), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.wallsThickness, Simulation.RoomSizeZ, Simulation.RoomSizeY), new Vector3(+Simulation.RoomSizeX/2, 0, 0), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.wallsThickness, Simulation.RoomSizeZ, Simulation.RoomSizeY), new Vector3(-Simulation.RoomSizeX/2, 0, 0), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.RoomSizeX, Simulation.RoomSizeZ, Simulation.wallsThickness), new Vector3(0, 0, -Simulation.RoomSizeY/2), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.RoomSizeX, Simulation.RoomSizeZ, Simulation.wallsThickness), new Vector3(0, 0, +Simulation.RoomSizeY/2), false).start();
         }
 
         public void initControllers()

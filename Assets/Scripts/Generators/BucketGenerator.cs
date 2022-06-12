@@ -29,12 +29,11 @@ namespace Generators{
         public float3 getPositionVector(int i, int j, int k)
         {
             return new float3(
-                (i * Simulation.particleSize) + startingPoint[0],
-                (j * Simulation.particleSize) + startingPoint[1],
-                (k * Simulation.particleSize) + startingPoint[2]
+                (i * SPH.H) + startingPoint[0],
+                (j * SPH.H) + startingPoint[1],
+                (k * SPH.H) + startingPoint[2]
             ) + this.getNoiseVector();
         }
-
 
         public override List<Particle> update(List<Particle> particles)
         {

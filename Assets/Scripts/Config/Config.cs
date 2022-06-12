@@ -1,10 +1,9 @@
 namespace Config{
 
     public static class Simulation{
-        public const float floorY = 512;
-        public const float floorX = 512;
-        public const float wallSize = 512;
-        public const float particleSize = 16;
+        public const float RoomSizeX = 512;
+        public const float RoomSizeY = 512;
+        public const float RoomSizeZ = 255;
         public const int numberOfLayersInSea = 5;
         public const int wallsThickness = 20;
     }

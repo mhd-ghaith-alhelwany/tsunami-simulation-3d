@@ -16,8 +16,8 @@ namespace Generators{
 
         public override List<Particle> start(List<Particle> particles)
         {
-            int I = (int)(Simulation.floorX/Simulation.particleSize) - 1;
-            int J = (int)(Simulation.floorY/Simulation.particleSize) - 1; 
+            int I = (int)(Simulation.RoomSizeX/SPH.H) - 1;
+            int J = (int)(Simulation.RoomSizeY/SPH.H) - 1; 
             int K = layers;
             for(int i = 1; i < I; i++)
                 for(int j = 1; j < J; j++)
@@ -29,9 +29,9 @@ namespace Generators{
         public float3 getPositionVector(int i, int j, int k)
         {
             return new float3(
-                i * Simulation.particleSize - (Simulation.floorX / 2), 
-                (k + 5) * Simulation.particleSize + (Simulation.wallsThickness / 2) - (Simulation.wallSize / 2),
-                j * Simulation.particleSize - (Simulation.floorY / 2)
+                i * SPH.H - (Simulation.RoomSizeX / 2), 
+                (k + 5) * SPH.H + (Simulation.wallsThickness / 2) - (Simulation.RoomSizeZ / 2),
+                j * SPH.H - (Simulation.RoomSizeY / 2)
             );
         }
         public override List<Particle> update(List<Particle> particles)
