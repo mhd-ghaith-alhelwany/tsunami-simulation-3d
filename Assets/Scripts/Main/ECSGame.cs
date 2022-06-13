@@ -17,10 +17,11 @@ namespace Main {
         private List<FluidGenerator> generators;
         private List<Particle> particles;
         private List<Controller> controllers;
-        
+        public bool isStarted;
+
         public ECSGame(GameObject particlePrefab, GameObject boxPrefab)
         {
-
+            this.isStarted = false;
             this.particlePrefab = particlePrefab;
             this.boxPrefab = boxPrefab;
             this.random = new System.Random();
@@ -101,6 +102,7 @@ namespace Main {
 
         public void start()
         {
+            this.isStarted = true;
             this.initRoom();
             this.initFluidGenerators();
             this.startFluidGenerators();

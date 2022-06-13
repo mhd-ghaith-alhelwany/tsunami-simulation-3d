@@ -6,20 +6,23 @@ public class ECSEngine : MonoBehaviour
     public GameObject particlePrefab;
     public GameObject boxPrefab;
     public ECSGame game;
-    
     void Start()
     {        
         this.game = new ECSGame(particlePrefab, boxPrefab);
-        this.game.start();
     }
 
     void Update()
     {
-        this.game.update();
+        Debug.Log(this.game.isStarted);
+        if(this.game.isStarted)
+            this.game.update();
     }
 
-    public void buttonClicked()
+    private GameObject[] UIObjects;
+    public void startButton()
     {
-        this.game.buttonClicked();
+        this.game.start();
+        UIObjects = GameObject.FindGameObjectsWithTag("UI");
+        foreach (GameObject uiObject in UIObjects) Destroy(uiObject);
     }
 }
