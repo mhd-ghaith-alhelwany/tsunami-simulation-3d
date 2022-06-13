@@ -47,8 +47,10 @@ namespace Controllers{
             pressures.Dispose();
             ids.Dispose();
             positionsInGrid.Dispose();
-            neighbours.Dispose();
-            neighboursMinMax.Dispose();
+            if(neighbours.IsCreated)
+                neighbours.Dispose();
+            if(neighboursMinMax.IsCreated)
+                neighboursMinMax.Dispose();
         }
 
         public void setGrid(NativeArray<int3> positionsInGrid){
@@ -79,7 +81,6 @@ namespace Controllers{
             for(int i = 0; i < values.Length; i++) values[i] = this.particles[i].getPosition();
             return values;
         }
-        
         protected NativeArray<float3> getVelocities(){
             NativeArray<float3> values = new NativeArray<float3>(this.particles.Count, Allocator.TempJob);
             for(int i = 0; i < values.Length; i++) values[i] = this.particles[i].getVelocity();

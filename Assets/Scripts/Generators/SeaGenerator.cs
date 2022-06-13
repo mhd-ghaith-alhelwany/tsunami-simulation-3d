@@ -9,18 +9,17 @@ namespace Generators{
     {
         private int layers;
 
-        public SeaGenerator(GameObject prefab, int layers) : base(prefab)
+        public SeaGenerator(GameObject prefab) : base(prefab)
         {
-            this.layers = layers;
         }
 
         public override List<Particle> start(List<Particle> particles)
         {
-            int I = (int)(Simulation.RoomSizeX/SPH.H) - 1;
-            int J = (int)(Simulation.RoomSizeY/SPH.H) - 1; 
-            int K = layers;
-            for(int i = 1; i < I; i++)
-                for(int j = 1; j < J; j++)
+            int I = Config.Simulation.numberOfParticlesX;
+            int J = Config.Simulation.numberOfParticlesY; 
+            int K = Config.Simulation.numberOfParticlesZ;
+            for(int i = 0; i < I; i++)
+                for(int j = 0; j < J; j++)
                     for(int k = 0; k < K; k++)
                         particles.Add(this.create(this.getPositionVector(i, j, k)));
             return particles;
@@ -28,15 +27,16 @@ namespace Generators{
 
         public float3 getPositionVector(int i, int j, int k)
         {
+            float s = SPH.H + 1;
             return new float3(
-                i * SPH.H - (Simulation.RoomSizeX / 2), 
-                (k + 5) * SPH.H + (Simulation.wallsThickness / 2) - (Simulation.RoomSizeZ / 2),
-                j * SPH.H - (Simulation.RoomSizeY / 2)
-            );
+                -Simulation.RoomSizeX/2 + Simulation.wallsThickness + (i * s),
+                -Simulation.RoomSizeY/2 + Simulation.wallsThickness + ((j + 1) * s),
+                -Simulation.RoomSizeZ/2 + Simulation.wallsThickness + (k * s)
+            ) + this.getNoiseVector();
         }
         public override List<Particle> update(List<Particle> particles)
         {
-            return particles;
+            return null;
         }
     }
 }

@@ -80,6 +80,7 @@ namespace Controllers{
             this.integrate();
             this.collideWithBounds();
             this.setPositions(positions);
+            this.setVelocities(velocities);
         }
     }
 }

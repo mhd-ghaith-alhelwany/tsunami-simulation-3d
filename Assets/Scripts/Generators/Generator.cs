@@ -14,10 +14,10 @@ namespace Generators{
             this.random = new System.Random();
         }
         private float getRand(){
-            return random.Next(-20, 20) / 10;
+            return (float)random.Next(-10, 10) / 100f;
         }
         protected float3 getNoiseVector(){
-            return new float3(this.getRand(), this.getRand(), this.getRand());
+            return new float3(this.getRand(), 0, this.getRand());
         }
         protected float3 getEmptyVector(){
             return new float3(0, 0, 0);

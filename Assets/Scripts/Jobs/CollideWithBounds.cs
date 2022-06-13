@@ -13,12 +13,12 @@ namespace Jobs{
         public void Execute(int index)
         {
             float3 position = positions[index];
-            if(velocities[index][1] > 0 && position[1] + SPH.EPS >= +Simulation.RoomSizeZ/2 - Simulation.wallsThickness) { position[1] = +Simulation.RoomSizeZ/2 - SPH.EPS - Simulation.wallsThickness; velocities[index] *= SPH.BOUND_DAMPING;} else 
-            if(velocities[index][1] < 0 && position[1] - SPH.EPS <= -Simulation.RoomSizeZ/2 + Simulation.wallsThickness) { position[1] = -Simulation.RoomSizeZ/2 + SPH.EPS + Simulation.wallsThickness; velocities[index] *= SPH.BOUND_DAMPING;} else 
-            if(velocities[index][0] > 0 && position[0] + SPH.EPS >= +Simulation.RoomSizeX/2   - Simulation.wallsThickness) { position[0] = +Simulation.RoomSizeX/2   - SPH.EPS - Simulation.wallsThickness; velocities[index] *= SPH.BOUND_DAMPING;} else 
-            if(velocities[index][0] < 0 && position[0] - SPH.EPS <= -Simulation.RoomSizeX/2   + Simulation.wallsThickness) { position[0] = -Simulation.RoomSizeX/2   + SPH.EPS + Simulation.wallsThickness; velocities[index] *= SPH.BOUND_DAMPING;} else 
-            if(velocities[index][2] > 0 && position[2] + SPH.EPS >= +Simulation.RoomSizeY/2   - Simulation.wallsThickness) { position[2] = +Simulation.RoomSizeY/2   - SPH.EPS - Simulation.wallsThickness; velocities[index] *= SPH.BOUND_DAMPING;} else 
-            if(velocities[index][2] < 0 && position[2] - SPH.EPS <= -Simulation.RoomSizeY/2   + Simulation.wallsThickness) { position[2] = -Simulation.RoomSizeY/2   + SPH.EPS + Simulation.wallsThickness; velocities[index] *= SPH.BOUND_DAMPING;}
+            if(position[0] + SPH.EPS >= +Simulation.RoomSizeX/2 - Simulation.wallsThickness) { position[0] = +Simulation.RoomSizeX/2 - SPH.EPS - Simulation.wallsThickness; velocities[index] = new float3(velocities[index].x * SPH.BOUND_DAMPING, velocities[index].y, velocities[index].z);}
+            if(position[0] - SPH.EPS <= -Simulation.RoomSizeX/2 + Simulation.wallsThickness) { position[0] = -Simulation.RoomSizeX/2 + SPH.EPS + Simulation.wallsThickness; velocities[index] = new float3(velocities[index].x * SPH.BOUND_DAMPING, velocities[index].y, velocities[index].z);}
+            if(position[1] + SPH.EPS >= +Simulation.RoomSizeY/2 - Simulation.wallsThickness) { position[1] = +Simulation.RoomSizeY/2 - SPH.EPS - Simulation.wallsThickness; velocities[index] = new float3(velocities[index].x, velocities[index].y * SPH.BOUND_DAMPING, velocities[index].z);}
+            if(position[1] - SPH.EPS <= -Simulation.RoomSizeY/2 + Simulation.wallsThickness) { position[1] = -Simulation.RoomSizeY/2 + SPH.EPS + Simulation.wallsThickness; velocities[index] = new float3(velocities[index].x, velocities[index].y * SPH.BOUND_DAMPING, velocities[index].z);}
+            if(position[2] + SPH.EPS >= +Simulation.RoomSizeZ/2 - Simulation.wallsThickness) { position[2] = +Simulation.RoomSizeZ/2 - SPH.EPS - Simulation.wallsThickness; velocities[index] = new float3(velocities[index].x, velocities[index].y, velocities[index].z * SPH.BOUND_DAMPING);}
+            if(position[2] - SPH.EPS <= -Simulation.RoomSizeZ/2 + Simulation.wallsThickness) { position[2] = -Simulation.RoomSizeZ/2 + SPH.EPS + Simulation.wallsThickness; velocities[index] = new float3(velocities[index].x, velocities[index].y, velocities[index].z * SPH.BOUND_DAMPING);}
             positions[index] = position;
         }
     }

@@ -13,7 +13,14 @@ namespace Generators{
 
         public Particle create(float3 position)
         {
-            return new Particle(base.createGameObject(position + this.getNoiseVector()));
+            return new Particle(base.createGameObject(position));
+        }
+
+        public Particle create(float3 position, float3 velocity)
+        {
+            Particle p = new Particle(base.createGameObject(position));
+            p.setVelocity(velocity);
+            return p;
         }
     }
 }

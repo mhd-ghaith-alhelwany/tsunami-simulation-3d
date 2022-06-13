@@ -5,7 +5,7 @@ namespace Models{
     public class Particle : Model
     {
         private float density, pressure;
-        private Vector3 force, velocity, position;
+        private float3 force, velocity, position;
         private int3 positionInGrid;
 
         public Particle(GameObject gameObject): base(gameObject)
@@ -17,16 +17,19 @@ namespace Models{
             this.setPosition(gameObject.transform.localPosition);
         }
 
-        public void setPosition(Vector3 value){this.position = value; base.setObjectPosition(value);}
-        public void setVelocity(Vector3 value){this.velocity = value;}
-        public void setForce(Vector3 value){this.force = value;}
+        public void setPosition(float3 value){
+            base.setObjectPosition(value); 
+            this.position = value; 
+        }
+        public void setVelocity(float3 value){this.velocity = value;}
+        public void setForce(float3 value){this.force = value;}
         public void setDensity(float value){this.density = value;}
         public void setPressure(float value){this.pressure = value;}
         public void setPositionInGrid(int3 value){this.positionInGrid = value;}
         
-        public Vector3 getPosition(){return position;}
-        public Vector3 getVelocity(){return velocity;}
-        public Vector3 getForce(){return force;}
+        public float3 getPosition(){return position;}
+        public float3 getVelocity(){return velocity;}
+        public float3 getForce(){return force;}
         public float getDensity(){return density;}
         public float getPressure(){return pressure;}
         public int3 getPositionInGrid(){return positionInGrid;}

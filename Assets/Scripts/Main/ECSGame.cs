@@ -38,8 +38,15 @@ namespace Main {
 
         private void updateGenerators()
         {
-            foreach(FluidGenerator generator in this.generators)
-                this.particles = generator.update(this.particles);
+            for(int i = 0; i < this.generators.Count; i++){
+                List<Particle> particles = generators[i].update(this.particles);
+                if(particles == null)
+                    this.generators.RemoveAt(i);
+                else{
+                    this.particles = particles;
+                    this.restartControllers();
+                }
+            }
         }
 
         private void updateControllers()
@@ -50,16 +57,16 @@ namespace Main {
 
         private void initFluidGenerators()
         {
-            this.generators.Add(new SeaGenerator(this.particlePrefab, Simulation.numberOfLayersInSea));    
+            this.generators.Add(new SeaGenerator(this.particlePrefab));
         }
 
         private void initRoom()
         {
-            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.RoomSizeX, Simulation.wallsThickness, Simulation.RoomSizeY), new Vector3(0, -Simulation.RoomSizeZ/2, 0), false).start();
-            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.wallsThickness, Simulation.RoomSizeZ, Simulation.RoomSizeY), new Vector3(+Simulation.RoomSizeX/2, 0, 0), false).start();
-            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.wallsThickness, Simulation.RoomSizeZ, Simulation.RoomSizeY), new Vector3(-Simulation.RoomSizeX/2, 0, 0), false).start();
-            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.RoomSizeX, Simulation.RoomSizeZ, Simulation.wallsThickness), new Vector3(0, 0, -Simulation.RoomSizeY/2), false).start();
-            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.RoomSizeX, Simulation.RoomSizeZ, Simulation.wallsThickness), new Vector3(0, 0, +Simulation.RoomSizeY/2), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.RoomSizeX, Simulation.wallsThickness, Simulation.RoomSizeZ), new Vector3(0, -Simulation.RoomSizeY/2, 0), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.wallsThickness, Simulation.RoomSizeY, Simulation.RoomSizeZ), new Vector3(+Simulation.RoomSizeX/2, 0, 0), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.wallsThickness, Simulation.RoomSizeY, Simulation.RoomSizeZ), new Vector3(-Simulation.RoomSizeX/2, 0, 0), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.RoomSizeX, Simulation.RoomSizeY, Simulation.wallsThickness), new Vector3(0, 0, -Simulation.RoomSizeZ/2), false).start();
+            new BoxGenerator(this.boxPrefab, new Vector3(Simulation.RoomSizeX, Simulation.RoomSizeY, Simulation.wallsThickness), new Vector3(0, 0, +Simulation.RoomSizeZ/2), false).start();
         }
 
         public void initControllers()
@@ -86,7 +93,8 @@ namespace Main {
 
         public void buttonClicked()
         {
-            BucketGenerator generator = new BucketGenerator(this.particlePrefab, new Vector3(4, 4, 4), new Vector3(-150, 200, -100));
+            // BucketGenerator generator = new BucketGenerator(this.particlePrefab, new Vector3(4, 4, 4), new Vector3(-150, 200, -100));
+            WaveGenerator generator = new WaveGenerator(this.particlePrefab, 5);
             this.addFluidGenerator(generator);
             this.restartControllers();
         }
