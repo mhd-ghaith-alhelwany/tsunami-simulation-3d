@@ -9,20 +9,22 @@ public class ECSEngine : MonoBehaviour
     void Start()
     {        
         this.game = new ECSGame(particlePrefab, boxPrefab);
+        this.game.start();
     }
 
     void Update()
     {
-        Debug.Log(this.game.isStarted);
         if(this.game.isStarted)
             this.game.update();
     }
-
-    private GameObject[] UIObjects;
-    public void startButton()
+    
+    public void startWaveButton()
     {
-        this.game.start();
-        UIObjects = GameObject.FindGameObjectsWithTag("UI");
-        foreach (GameObject uiObject in UIObjects) Destroy(uiObject);
+        this.game.startWaveButtonPressed();
+    }
+
+    public void dropBucketButton()
+    {
+        this.game.dropBucketButtonPressed();
     }
 }

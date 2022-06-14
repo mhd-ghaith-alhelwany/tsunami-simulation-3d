@@ -3,14 +3,17 @@ namespace Config
 
     public class Simulation
     {
-        public static int numberOfParticlesX = 10;
+        public static int numberOfParticlesX = 20;
         public static int numberOfParticlesY = 10;
-        public static int numberOfParticlesZ = 40;
+        public static int numberOfParticlesZ = 20;
 
         public static float RoomSizeX = (numberOfParticlesX) * 16 * 1.3f;
         public static float RoomSizeY = (numberOfParticlesY) * 16 * 10f;
         public static float RoomSizeZ = (numberOfParticlesZ) * 16 * 1.3f;
         public static int wallsThickness = 20;
+
+        public static int numberOfWaves = 6;
+        public static int waveSize = 2;
     }
 
     public class SPH

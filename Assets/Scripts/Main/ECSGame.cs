@@ -90,14 +90,16 @@ namespace Main {
         {
             this.particles = generator.start(this.particles);
             this.generators.Add(generator);
+            this.restartControllers();
         }
 
-        public void buttonClicked()
+        public void dropBucketButtonPressed()
         {
-            // BucketGenerator generator = new BucketGenerator(this.particlePrefab, new Vector3(4, 4, 4), new Vector3(-150, 200, -100));
-            WaveGenerator generator = new WaveGenerator(this.particlePrefab, 5);
-            this.addFluidGenerator(generator);
-            this.restartControllers();
+            this.addFluidGenerator(new BucketGenerator(this.particlePrefab, new Vector3(8, 8, 8), new Vector3(-64 , 0, 0)));
+        }
+        public void startWaveButtonPressed()
+        {
+            this.addFluidGenerator(new WaveGenerator(this.particlePrefab));
         }
 
         public void start()
